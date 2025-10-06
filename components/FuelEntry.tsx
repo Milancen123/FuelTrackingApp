@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { CalendarIcon, DollarSign, Fuel, Gauge, X } from 'lucide-react';
+import { CalendarIcon, Car, DollarSign, Fuel, Gauge, X } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Calendar } from "@/components/ui/calendar"
@@ -11,6 +11,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { CarType } from '@/types/car';
 
 
 
@@ -18,18 +19,22 @@ interface FuelEntryProps {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
     activeVehicle: string;
+    vehicles: CarType[] | undefined;
     odometer_last_reading: number;
 }
 
 
 
-const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: FuelEntryProps) => {
+
+const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_reading }: FuelEntryProps) => {
     const [step, setStep] = useState(1);
     const [date, setDate] = React.useState<Date>(() => new Date());
+    const [activeVehicleForFuel, setActiveVehicleForFuel] = useState<CarType | undefined>(vehicles && vehicles.find((car) => car.name === activeVehicle));
+
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     const [formData, setFormData] = useState({
-        vehicle: activeVehicle,
+        vehicle: activeVehicleForFuel,
         odometer: "",
         fuelFilled: 0.0,
         totalPrice: 0.0,
@@ -44,21 +49,21 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
 
 
     const handleNextStep = () => {
-        if (step > 4) return setStep(1);
-        if (step === 1) {
+        if (step > 5) return setStep(1);
+        if (step === 2) {
             if (!formData.odometer) {
                 setErrors({ odometer: "Please enter a value for the odometer." });
                 return;
             } else if (Number.isNaN(Number(formData.odometer))) {
                 setErrors({ odometer: "Only numeric values are allowed." });
                 return;
-            } else if (Number(formData.odometer) <= Number(odometer_last_reading)) {
+            } else if (Number(formData.odometer) <= Number(activeVehicleForFuel?.odometer)) {
                 setErrors({ odometer: "Odometer reading cannot be less than or equal to the previous recorded value." });
                 return;
             }
             setErrors({});
         }
-        if (step === 2) {
+        if (step === 3) {
             if (!formData.fuelFilled) {
                 setErrors({ fuelFilled: "Please enter a value for the fuel." });
                 return;
@@ -71,7 +76,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
             }
             setErrors({});
         }
-        if (step === 3) {
+        if (step === 4) {
             if (!formData.totalPrice) {
                 setErrors({ totalPrice: "Please enter a value for the total price" });
                 return;
@@ -102,6 +107,13 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
         handleChange("date", date.toString());
     }, [date]);
 
+    useEffect(() => {
+        //@ts-expect-error expected
+        handleChange("vehicle", (activeVehicleForFuel.name));
+        console.log(activeVehicleForFuel);
+    }, [activeVehicleForFuel]);
+
+
 
     if (!isOpen) {
         return;
@@ -114,20 +126,47 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
                 <div className='flex justify-between items-center border-b-1 pb-3'>
                     <div>
                         <h1 className='font-bold text-xl'>Add Fuel Entry</h1>
-                        <p className='text-gray-500'>Step {step} of 4</p>
+                        <p className='text-gray-500'>Step {step} of 5</p>
                     </div>
                     <div className='hover:bg-gray-200 transition-all cursor-pointer p-1 rounded-lg' onClick={() => setIsOpen(false)}>
                         <X />
                     </div>
                 </div>
+
                 {/* steps */}
                 <div className='flex gap-3'>
-                    {[1, 2, 3, 4].map((stepNumber) => {
+                    {[1, 2, 3, 4,5].map((stepNumber) => {
                         return <div key={stepNumber} className={`${stepNumber <= step ? 'bg-[#171717]' : 'bg-[#F5F5F5]'} w-full h-2 rounded-full`}>
                         </div>
                     })}
                 </div>
+
                 {step === 1 && (
+                    <div className='flex flex-col items-center gap-4'>
+                        <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
+                            <Car size={40} />
+                        </div>
+                        <div className='text-center'>
+                            <h1 className='text-2xl font-bold'>Select vehicle</h1>
+                            <p className='text-gray-500'>Which vehicle are you refueling?</p>
+                        </div>
+                        <div className='w-[80%] flex flex-col gap-2 '>
+                            {vehicles && vehicles.map((vehicle)=> (
+                                <div key={vehicle.name} className={`cursor-pointer flex w-full justify-between items-center p-2 border-1 border-gray-300 rounded-xl ${activeVehicleForFuel  && activeVehicleForFuel.name === vehicle.name && 'bg-gray-100 transition-all'}`} onClick={()=> {setActiveVehicleForFuel(vehicle)}}>
+                                    <div className='flex items-center gap-2'>
+                                        <div className='p-2 flex justify-center items-center bg-gray-200 rounded-lg'>
+                                            <Car/>
+                                        </div>
+                                        <h1>{vehicle.name}</h1>
+                                    </div>
+                                    
+                                    {(activeVehicleForFuel && activeVehicleForFuel.name === vehicle.name) && (<Check/>)}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {step === 2 && (
                     <div className='flex flex-col items-center gap-4'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
                             <Gauge size={40} />
@@ -140,11 +179,11 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
                             <h1 className='font-semibold'>Current Odometer (km)</h1>
                             <Input className={`p-6 text-center  ${errors.odometer ? 'text-red-500 font-bold' : 'text-black'}`} placeholder='45892' value={formData.odometer !== '0' ? formData.odometer : ''} onChange={(e) => handleChange("odometer", e.target.value)} />
                             {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.odometer}</p>)}
-                            <p className='text-xs text-gray-500 text-center'>Last reading: {odometer_last_reading}km</p>
+                            <p className='text-xs text-gray-500 text-center'>Last reading: {activeVehicleForFuel && activeVehicleForFuel.odometer}km</p>
                         </div>
                     </div>
                 )}
-                {step === 2 && (
+                {step === 3 && (
                     <div className='flex flex-col items-center gap-4'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
                             <Fuel size={40} />
@@ -160,7 +199,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
                         </div>
                     </div>
                 )}
-                {step === 3 && (
+                {step === 4 && (
                     <div className='flex flex-col items-center gap-4'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
                             <DollarSign color="#517538" size={40} />
@@ -193,7 +232,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
                         </div>
                     </div>
                 )}
-                {step === 4 && (
+                {step === 5 && (
                     /*summary page*/
                     <div className='flex flex-col items-center gap-4'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
@@ -206,7 +245,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
                         <div className='w-[80%] flex flex-col gap-2 p-2 rounded-xl bg-gray-50 text-sm border-1 border-gray-300'>
                             <div className='flex justify-between border-b-1 border-b-solid border-gray-300 p-4 '>
                                 <h1 className='text-gray-500 text-sm'>Vehicle</h1>
-                                <h1 className='text-black font-semibold text-sm'>{activeVehicle}</h1>
+                                <h1 className='text-black font-semibold text-sm'>{activeVehicleForFuel && activeVehicleForFuel.name}</h1>
                             </div>
                             <div className='flex justify-between pl-4 pr-4 '>
                                 <h1 className='text-gray-500 text-sm'>Odometer</h1>
@@ -227,10 +266,11 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: 
                         </div>
                     </div>
                 )}
+                
                 <div className='w-full  justify-between flex gap-2'>
                     <Button className='w-[48%] cursor-pointer bg-white text-black border-1 border-gray-400 hover:text-white' disabled={step === 1} onClick={handleBackStep}>Back</Button>
-                    {step < 4 && <Button className='w-[48%] cursor-pointer' onClick={() => handleNextStep()} >Next</Button>}
-                    {step === 4 && <Button className='w-[48%] cursor-pointer' onClick={() => handleSubmit()}><Check />Confirm</Button>}
+                    {step < 5 && <Button className='w-[48%] cursor-pointer' onClick={() => handleNextStep()} >Next</Button>}
+                    {step === 5 && <Button className='w-[48%] cursor-pointer' onClick={() => handleSubmit()}><Check />Confirm</Button>}
                 </div>
             </div>
         </div>

@@ -18,7 +18,7 @@ import Card from '@/components/Card';
 import FuelCard from '@/components/FuelCard';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Car } from "@/types/car";
+import { CarType } from "@/types/car";
 import FuelEntry from '@/components/FuelEntry';
 
 
@@ -26,7 +26,7 @@ import FuelEntry from '@/components/FuelEntry';
 
 
 
-const vehicles:Car[] = [
+const allVehicles:CarType[] = [
   {
     name: "Opel Vectra B",
     last_fill_up: 45.6,
@@ -117,15 +117,19 @@ const vehicles:Car[] = [
 
 
 const Page = () => {
-  const [activeVehicle, setActiveVehicle] = useState<Car>(vehicles[0]);
+  const [activeVehicle, setActiveVehicle] = useState<CarType>(allVehicles[0]);
+  const [vehicles, setVehicles] = useState<CarType[] | undefined>(allVehicles);
   const [isOpen, setIsOpen] = useState(false);
+
+
+
 
   return (
     <div className='bg-white flex flex-col gap-5 md:mb-[5%] mb-[15%]'>
       <div className='pt-5'>
         <p className='text-lg font-bold'>My Vehicles</p>
         <div className='hidden mt-5 gap-2 md:flex'>
-          {vehicles.map((vehicle) => {
+          {vehicles && vehicles.map((vehicle) => {
             return <div key={vehicle.name} onClick={() => setActiveVehicle(vehicle)} className='max-w-[380px] min-w-[360px] '>
               <CarCard
                 key={vehicle.name}
@@ -140,7 +144,8 @@ const Page = () => {
         <div className='flex md:hidden justify-center mt-5'>
           <Carousel className="w-full max-w-xs">
             <CarouselContent>
-              {vehicles.map((vehicle, index) => {
+
+              {vehicles && vehicles.map((vehicle, index) => {
                 console.log(vehicle);
                 return <CarouselItem key={index} onClick={() => setActiveVehicle(vehicle)}>
                   <CarCard
@@ -200,7 +205,7 @@ const Page = () => {
         </Button>
       </div>
 
-      {isOpen && <FuelEntry isOpen={isOpen} setIsOpen={setIsOpen} activeVehicle={activeVehicle.name} odometer_last_reading={activeVehicle.odometer}/>}
+      {isOpen && <FuelEntry isOpen={isOpen} setIsOpen={setIsOpen} activeVehicle={activeVehicle.name} vehicles={vehicles} odometer_last_reading={activeVehicle.odometer}/>}
     </div>
   )
 }
