@@ -17,18 +17,19 @@ import {
 interface FuelEntryProps {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    activeVehicle:string;
-    odometer_last_reading:number;
+    activeVehicle: string;
+    odometer_last_reading: number;
 }
 
 
 
-const FuelEntry = ({ isOpen, setIsOpen,activeVehicle, odometer_last_reading }: FuelEntryProps) => {
+const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, odometer_last_reading }: FuelEntryProps) => {
     const [step, setStep] = useState(1);
-    const [date, setDate] = React.useState<Date>(() => new Date())
+    const [date, setDate] = React.useState<Date>(() => new Date());
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     const [formData, setFormData] = useState({
-        vehicle:activeVehicle,
+        vehicle: activeVehicle,
         odometer: "",
         fuelFilled: 0.0,
         totalPrice: 0.0,
@@ -44,10 +45,45 @@ const FuelEntry = ({ isOpen, setIsOpen,activeVehicle, odometer_last_reading }: F
 
     const handleNextStep = () => {
         if (step > 4) return setStep(1);
-        console.log("Ovo je trenutni korak");
-        console.log(step);
-        console.log("Ovo su sada podaci u formi koji se nalaze--------------------");
-        console.log(formData);
+        if (step === 1) {
+            if (!formData.odometer) {
+                setErrors({ odometer: "Please enter a value for the odometer." });
+                return;
+            } else if (Number.isNaN(Number(formData.odometer))) {
+                setErrors({ odometer: "Only numeric values are allowed." });
+                return;
+            } else if (Number(formData.odometer) <= Number(odometer_last_reading)) {
+                setErrors({ odometer: "Odometer reading cannot be less than or equal to the previous recorded value." });
+                return;
+            }
+            setErrors({});
+        }
+        if (step === 2) {
+            if (!formData.fuelFilled) {
+                setErrors({ fuelFilled: "Please enter a value for the fuel." });
+                return;
+            } else if (Number.isNaN(Number(formData.fuelFilled))) {
+                setErrors({ fuelFilled: "Only numeric values are allowed." });
+                return;
+            } else if (Number(formData.fuelFilled) <= 0) {
+                setErrors({ fuelFilled: "Fuel amount cannot be less than or equal to zero" });
+                return;
+            }
+            setErrors({});
+        }
+        if (step === 3) {
+            if (!formData.totalPrice) {
+                setErrors({ totalPrice: "Please enter a value for the total price" });
+                return;
+            } else if (Number.isNaN(Number(formData.totalPrice))) {
+                setErrors({ totalPrice: "Only numeric values are allowed." });
+                return;
+            } else if (Number(formData.totalPrice) <= 0) {
+                setErrors({ totalPrice: "Total price cannot be less than or equal to zero" });
+                return;
+            }
+            setErrors({});
+        }
         setStep((prev) => prev + 1);
     }
 
@@ -102,7 +138,8 @@ const FuelEntry = ({ isOpen, setIsOpen,activeVehicle, odometer_last_reading }: F
                         </div>
                         <div className='w-[80%] flex flex-col gap-2'>
                             <h1 className='font-semibold'>Current Odometer (km)</h1>
-                            <Input className='p-6 text-center' placeholder='45892' value={formData.odometer !== '0' ? formData.odometer : ''} onChange={(e) => handleChange("odometer", e.target.value)} />
+                            <Input className={`p-6 text-center  ${errors.odometer ? 'text-red-500 font-bold' : 'text-black'}`} placeholder='45892' value={formData.odometer !== '0' ? formData.odometer : ''} onChange={(e) => handleChange("odometer", e.target.value)} />
+                            {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.odometer}</p>)}
                             <p className='text-xs text-gray-500 text-center'>Last reading: {odometer_last_reading}km</p>
                         </div>
                     </div>
@@ -118,7 +155,8 @@ const FuelEntry = ({ isOpen, setIsOpen,activeVehicle, odometer_last_reading }: F
                         </div>
                         <div className='w-[80%] flex flex-col gap-2'>
                             <h1 className='font-semibold'>Liters</h1>
-                            <Input className='p-6 text-center' placeholder='45.2' value={formData.fuelFilled !== 0 ? formData.fuelFilled : ''} onChange={(e) => handleChange("fuelFilled", e.target.value)} />
+                            <Input className='p-6 text-center' required placeholder='45.2' value={formData.fuelFilled !== 0 ? formData.fuelFilled : ''} onChange={(e) => handleChange("fuelFilled", e.target.value)} />
+                            {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.fuelFilled}</p>)}
                         </div>
                     </div>
                 )}
@@ -134,7 +172,8 @@ const FuelEntry = ({ isOpen, setIsOpen,activeVehicle, odometer_last_reading }: F
                         <div className='w-[80%] flex flex-col gap-2'>
                             <h1 className='font-semibold'>Total Price (EUR)</h1>
                             <Input className='p-6 text-center' placeholder='45.2' value={formData.totalPrice !== 0 ? formData.totalPrice : ''} onChange={(e) => handleChange("totalPrice", e.target.value)} />
-                            <p className='text-xs text-gray-500 text-center'>Price per liter: {(Number(formData.totalPrice) / Number(formData.fuelFilled)).toFixed(2)}EUR</p>
+                            {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.totalPrice}</p>)}
+                            <p className='text-xs text-gray-500 text-center'>Price per liter: {!Number.isNaN((Number(formData.totalPrice) / Number(formData.fuelFilled))) ? (Number(formData.totalPrice) / Number(formData.fuelFilled)).toFixed(2) : 0}EUR</p>
                             <h1 className='font-semibold'>Date</h1>
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -151,7 +190,6 @@ const FuelEntry = ({ isOpen, setIsOpen,activeVehicle, odometer_last_reading }: F
                                     <Calendar mode="single" selected={date} onSelect={setDate} />
                                 </PopoverContent>
                             </Popover>
-                            <p className='text-xs text-gray-500 text-center'>Price per liter: {(Number(formData.totalPrice) / Number(formData.fuelFilled)).toFixed(2)}EUR</p>
                         </div>
                     </div>
                 )}
@@ -192,7 +230,7 @@ const FuelEntry = ({ isOpen, setIsOpen,activeVehicle, odometer_last_reading }: F
                 <div className='w-full  justify-between flex gap-2'>
                     <Button className='w-[48%] cursor-pointer bg-white text-black border-1 border-gray-400 hover:text-white' disabled={step === 1} onClick={handleBackStep}>Back</Button>
                     {step < 4 && <Button className='w-[48%] cursor-pointer' onClick={() => handleNextStep()} >Next</Button>}
-                    {step === 4 && <Button className='w-[48%] cursor-pointer' onClick={() => handleSubmit()}><Check/>Confirm</Button>}
+                    {step === 4 && <Button className='w-[48%] cursor-pointer' onClick={() => handleSubmit()}><Check />Confirm</Button>}
                 </div>
             </div>
         </div>
