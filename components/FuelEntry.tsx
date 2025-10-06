@@ -5,7 +5,8 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Calendar } from "@/components/ui/calendar"
 import { Check } from 'lucide-react';
-import { format } from "date-fns"
+import { format } from "date-fns";
+import { LoaderCircle } from 'lucide-react';
 import {
     Popover,
     PopoverContent,
@@ -30,7 +31,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
     const [step, setStep] = useState(1);
     const [date, setDate] = React.useState<Date>(() => new Date());
     const [activeVehicleForFuel, setActiveVehicleForFuel] = useState<CarType | undefined>(vehicles && vehicles.find((car) => car.name === activeVehicle));
-
+    const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     const [formData, setFormData] = useState({
@@ -99,7 +100,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
     }
 
     const handleSubmit = () => {
-
+        setSubmitting(true);
     }
 
 
@@ -268,9 +269,9 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
                 )}
                 
                 <div className='w-full  justify-between flex gap-2'>
-                    <Button className='w-[48%] cursor-pointer bg-white text-black border-1 border-gray-400 hover:text-white' disabled={step === 1} onClick={handleBackStep}>Back</Button>
+                    <Button className='w-[48%] cursor-pointer bg-white text-black border-1 border-gray-400 hover:text-white' disabled={step === 1 || submitting} onClick={handleBackStep}>Back</Button>
                     {step < 5 && <Button className='w-[48%] cursor-pointer' onClick={() => handleNextStep()} >Next</Button>}
-                    {step === 5 && <Button className='w-[48%] cursor-pointer' onClick={() => handleSubmit()}><Check />Confirm</Button>}
+                    {step === 5 && <Button className={`w-[48%] cursor-pointer ${submitting && 'bg-gray-800'}`} disabled={submitting} onClick={() => handleSubmit()}>{submitting ? <><LoaderCircle className='animate-spin'/> Saving</> : <><Check /> Confirm</>}</Button>}
                 </div>
             </div>
         </div>
