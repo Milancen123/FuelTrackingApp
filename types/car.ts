@@ -1,9 +1,10 @@
-export interface FuelEntry {
+export interface FuelEntryType {
   fuel_filled: number;        // Liters filled
   date: Date;                 // Date of refueling
   total_price: number;        // Total price in chosen currency
+  odometer:number;
   average_consumption: number; // L/100km for this fill-up
-}
+};
 
 export interface CarType {
   name: string;
@@ -14,5 +15,5 @@ export interface CarType {
   compare_for_last_month_consumption: number; // % difference vs last month
   monthly_cost: number;        // Monthly fuel cost
   compare_for_last_month_cost: number; // % difference vs last month cost
-  fuelData: FuelEntry[];       // History of fuel entries
-}
+  fuelData: FuelEntryType[];       // History of fuel entries
+};

@@ -241,7 +241,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-full p-0">
-                                    <Calendar mode="single" selected={date} onSelect={setDate} />
+                                    <Calendar required mode="single" selected={date} onSelect={setDate} />
                                 </PopoverContent>
                             </Popover>
                         </div>
