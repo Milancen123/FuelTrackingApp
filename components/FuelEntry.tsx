@@ -8,6 +8,12 @@ import { Check } from 'lucide-react';
 import { format } from "date-fns";
 import { LoaderCircle } from 'lucide-react';
 import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+import {
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -129,14 +135,22 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
                         <h1 className='font-bold text-xl'>Add Fuel Entry</h1>
                         <p className='text-gray-500'>Step {step} of 5</p>
                     </div>
-                    <div className='hover:bg-gray-200 transition-all cursor-pointer p-1 rounded-lg' onClick={() => setIsOpen(false)}>
-                        <X />
-                    </div>
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <div className='hover:bg-gray-200 transition-all cursor-pointer p-1 rounded-lg' onClick={() => setIsOpen(false)}>
+                                <X />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Close</p>
+                        </TooltipContent>
+                    </Tooltip>
+
                 </div>
 
                 {/* steps */}
                 <div className='flex gap-3'>
-                    {[1, 2, 3, 4,5].map((stepNumber) => {
+                    {[1, 2, 3, 4, 5].map((stepNumber) => {
                         return <div key={stepNumber} className={`${stepNumber <= step ? 'bg-[#171717]' : 'bg-[#F5F5F5]'} w-full h-2 rounded-full`}>
                         </div>
                     })}
@@ -152,16 +166,16 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
                             <p className='text-gray-500'>Which vehicle are you refueling?</p>
                         </div>
                         <div className='w-[80%] flex flex-col gap-2 '>
-                            {vehicles && vehicles.map((vehicle)=> (
-                                <div key={vehicle.name} className={`cursor-pointer flex w-full justify-between items-center p-2 border-1 border-gray-300 rounded-xl ${activeVehicleForFuel  && activeVehicleForFuel.name === vehicle.name && 'bg-gray-100 transition-all'}`} onClick={()=> {setActiveVehicleForFuel(vehicle)}}>
+                            {vehicles && vehicles.map((vehicle) => (
+                                <div key={vehicle.name} className={`cursor-pointer flex w-full justify-between items-center p-2 border-1 border-gray-300 rounded-xl ${activeVehicleForFuel && activeVehicleForFuel.name === vehicle.name && 'bg-gray-100 transition-all'}`} onClick={() => { setActiveVehicleForFuel(vehicle) }}>
                                     <div className='flex items-center gap-2'>
                                         <div className='p-2 flex justify-center items-center bg-gray-200 rounded-lg'>
-                                            <Car/>
+                                            <Car />
                                         </div>
                                         <h1>{vehicle.name}</h1>
                                     </div>
-                                    
-                                    {(activeVehicleForFuel && activeVehicleForFuel.name === vehicle.name) && (<Check/>)}
+
+                                    {(activeVehicleForFuel && activeVehicleForFuel.name === vehicle.name) && (<Check />)}
                                 </div>
                             ))}
                         </div>
@@ -267,11 +281,11 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
                         </div>
                     </div>
                 )}
-                
+
                 <div className='w-full  justify-between flex gap-2'>
                     <Button className='w-[48%] cursor-pointer bg-white text-black border-1 border-gray-400 hover:text-white' disabled={step === 1 || submitting} onClick={handleBackStep}>Back</Button>
                     {step < 5 && <Button className='w-[48%] cursor-pointer' onClick={() => handleNextStep()} >Next</Button>}
-                    {step === 5 && <Button className={`w-[48%] cursor-pointer ${submitting && 'bg-gray-800'}`} disabled={submitting} onClick={() => handleSubmit()}>{submitting ? <><LoaderCircle className='animate-spin'/> Saving</> : <><Check /> Confirm</>}</Button>}
+                    {step === 5 && <Button className={`w-[48%] cursor-pointer ${submitting && 'bg-gray-800'}`} disabled={submitting} onClick={() => handleSubmit()}>{submitting ? <><LoaderCircle className='animate-spin' /> Saving</> : <><Check /> Confirm</>}</Button>}
                 </div>
             </div>
         </div>
