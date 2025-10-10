@@ -3,6 +3,8 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
+import User from "@/database/user.model";
+
 
 
 export async function POST(req: Request) {
@@ -36,11 +38,19 @@ export async function POST(req: Request) {
   console.log("✅ Webhook event:", type);
 
   try {
-    // await dbConnect();
-    
+    //sacuvaj u bazi podataka
+    if(type === "user.created") {
+      const name = `${data.first_name} ${data.last_name}`.trim();
+      const newUser = await User.create({
+        name,
+        username:data.username || data.id,
+        email:data.email_addresses?.[0].email_address,
+        image:data.image_url || data.profile_image_url
+      });
 
-    
-
+      
+      console.log("🟢 User created in MongoDB:", newUser.email);
+    }
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("❌ Database error:", err);
