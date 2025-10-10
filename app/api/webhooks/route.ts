@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   console.log("✅ Webhook event:", type);
 
   try {
-    await dbConnect();
+    // await dbConnect();
     
 
     
