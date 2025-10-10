@@ -6,6 +6,7 @@ import dbConnect from "@/lib/mongoose";
 
 
 export async function POST(req: Request) {
+  console.log("Pozvali su ovaj post request");
   const payload = await req.text(); 
   const svix_id =  (await headers()).get("svix-id");
   const svix_timestamp =(await headers()).get("svix-timestamp");
@@ -46,3 +47,6 @@ export async function POST(req: Request) {
     return new NextResponse("Database error", { status: 500 });
   }
 }
+
+
+
