@@ -25,25 +25,20 @@ if(!cached) {
 
 
 
-const dbConnect= async ():Promise<Mongoose> => {
-    if (cached.conn) {
-        return cached.conn
-    }
-    if(!cached.promise) {
-        cached.promise = mongoose.connect(uri, {
-            dbName:"fuelTracking",
-        }).then(result=>{
-            console.log(result);
-            return result;
-        }).catch(error=>{
-            console.log(error);
-            return error;
-        });
+const dbConnect = async (): Promise<Mongoose> => {
+  if (cached.conn) return cached.conn;
 
-    }
-    cached.conn = await cached.promise;
-    return cached.conn;
-}
+  if (!cached.promise) {
+    console.log("🧩 Connecting to MongoDB...");
+    cached.promise = mongoose.connect(uri, {
+      dbName: "fuelTracking",
+    });
+  }
+
+  cached.conn = await cached.promise;
+  console.log("✅ MongoDB connected");
+  return cached.conn;
+};
 
 
 export default dbConnect;
