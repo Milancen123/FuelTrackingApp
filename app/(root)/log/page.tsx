@@ -14,10 +14,11 @@ import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import { Car } from 'lucide-react';
 import FuelLogCard from '@/components/FuelLogCard';
+import dbConnect from '@/lib/mongoose';
 
 
 
-const allVehicles:CarType[] = [
+const allVehicles: CarType[] = [
   {
     name: "Opel Vectra B",
     last_fill_up: 45.6,
@@ -32,35 +33,35 @@ const allVehicles:CarType[] = [
         fuel_filled: 45.2,
         date: new Date("2025-01-15"),
         total_price: 4320,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 14.5,
       },
       {
         fuel_filled: 38.7,
         date: new Date("2025-01-28"),
         total_price: 3785,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 13.8,
       },
       {
         fuel_filled: 52.1,
         date: new Date("2025-02-10"),
         total_price: 5170,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 15.2,
       },
       {
         fuel_filled: 41.6,
         date: new Date("2025-02-24"),
         total_price: 4125,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 14.1,
       },
       {
         fuel_filled: 47.3,
         date: new Date("2025-03-08"),
         total_price: 4680,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 14.8,
       },
     ]
@@ -86,28 +87,28 @@ const allVehicles:CarType[] = [
         fuel_filled: 38.7,
         date: new Date("2025-01-28"),
         total_price: 3785,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 13.8,
       },
       {
         fuel_filled: 52.1,
         date: new Date("2025-02-10"),
         total_price: 5170,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 15.2,
       },
       {
         fuel_filled: 41.6,
         date: new Date("2025-02-24"),
         total_price: 4125,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 14.1,
       },
       {
         fuel_filled: 47.3,
         date: new Date("2025-03-08"),
         total_price: 4680,
-        odometer:123123,
+        odometer: 123123,
         average_consumption: 14.8,
       },
     ]
@@ -120,18 +121,18 @@ const Page = () => {
   const searchParams = useSearchParams();
 
   const vehicleQuery = searchParams.get("vehicle");
-  const defaultVehicle:string = vehicleQuery || allVehicles[0].name;
+  const defaultVehicle: string = vehicleQuery || allVehicles[0].name;
 
 
 
   //fetch available vehicles from the database
-  const [activeVehicle, setActiveVehicle] = useState<CarType>(allVehicles.find((vehicle)=>( vehicle.name === defaultVehicle)) || allVehicles[0]);
+  const [activeVehicle, setActiveVehicle] = useState<CarType>(allVehicles.find((vehicle) => (vehicle.name === defaultVehicle)) || allVehicles[0]);
   const [vehicles, setVehicles] = useState<CarType[]>(allVehicles);
   const [fuelData, setFuelData] = useState(activeVehicle.fuelData);
 
 
 
-  useEffect(()=>{
+  useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('vehicle', activeVehicle.name);
     router.replace(`?${params.toString()}`);
@@ -150,10 +151,10 @@ const Page = () => {
         <p className='text-lg font-bold'>Fuel Log</p>
       </div>
       <div className='flex gap-2'>
-        {vehicles.map((vehicle)=> (<div key={vehicle.name} onClick={()=>setActiveVehicle(vehicle)} className={`cursor-pointer hover:border-black p-4 border-1 rounded-xl shadow-sm flex gap-2  ${activeVehicle.name === vehicle.name ? 'bg-[#171717] text-white font-semibold border-black' : 'text-gray-500 border-gray-200 bg-gray-50'}`}>
-          <Car/>
+        {vehicles.map((vehicle) => (<div key={vehicle.name} onClick={() => setActiveVehicle(vehicle)} className={`cursor-pointer hover:border-black p-4 border-1 rounded-xl shadow-sm flex gap-2  ${activeVehicle.name === vehicle.name ? 'bg-[#171717] text-white font-semibold border-black' : 'text-gray-500 border-gray-200 bg-gray-50'}`}>
+          <Car />
           {vehicle.name}
-          </div>))}
+        </div>))}
       </div>
 
       <div className='flex items-center justify-between w-full p-4 border-1 border-gray-300 rounded-xl shadow-sm'>
@@ -172,7 +173,7 @@ const Page = () => {
       </div>
       <div className='flex flex-col gap-2'>
         {activeVehicle.fuelData.map((fuelLog) => (
-          <FuelLogCard key={`${fuelLog.date}+${fuelLog.total_price}`} date={fuelLog.date} totalPrice={fuelLog.total_price} pricePerLiter={(Number(fuelLog.total_price)/Number(fuelLog.fuel_filled))} volume={fuelLog.fuel_filled}  odometer={fuelLog.odometer}/>
+          <FuelLogCard key={`${fuelLog.date}+${fuelLog.total_price}`} date={fuelLog.date} totalPrice={fuelLog.total_price} pricePerLiter={(Number(fuelLog.total_price) / Number(fuelLog.fuel_filled))} volume={fuelLog.fuel_filled} odometer={fuelLog.odometer} />
         ))}
       </div>
       <Pagination>

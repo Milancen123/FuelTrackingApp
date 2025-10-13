@@ -38,6 +38,7 @@ export async function POST(req: Request) {
   console.log("✅ Webhook event:", type);
 
   try {
+    await dbConnect();
     //sacuvaj u bazi podataka
     if(type === "user.created") {
       const name = `${data.first_name} ${data.last_name}`.trim();
