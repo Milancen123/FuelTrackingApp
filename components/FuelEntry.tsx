@@ -118,8 +118,9 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
             console.log("✅ Saved vehicle:", res.data);
             toast.success("Fuel log has been created successfully");
             if(activeVehicleForFuel){
-                setVehicles(prev =>
-                    prev.map(v => {
+                setVehicles(prev =>{
+                    if (!prev) return [];
+                    return prev.map(v => {
                         console.log("1. OVDE--------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                         if (v.id !== activeVehicleForFuel.id) return v;
                         console.log("2. OVDE--------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -139,7 +140,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                             ]
                         };
                     })
-                );
+                });
             }
             setSubmitting(false);
             setIsOpen(false);
