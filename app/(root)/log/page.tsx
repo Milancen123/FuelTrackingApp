@@ -172,7 +172,7 @@ const Page = () => {
         </div>
       </div>
       <div className='flex flex-col gap-2'>
-        {activeVehicle.fuelData.map((fuelLog) => (
+        {activeVehicle.fuelData && activeVehicle.fuelData.map((fuelLog) => (
           <FuelLogCard key={`${fuelLog.date}+${fuelLog.total_price}`} date={fuelLog.date} totalPrice={fuelLog.total_price} pricePerLiter={(Number(fuelLog.total_price) / Number(fuelLog.fuel_filled))} volume={fuelLog.fuel_filled} odometer={fuelLog.odometer} />
         ))}
       </div>
