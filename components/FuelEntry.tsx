@@ -19,6 +19,8 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { CarType } from '@/types/car';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 
 
@@ -26,14 +28,16 @@ interface FuelEntryProps {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
     activeVehicle: string;
+    setActiveVehicle: React.Dispatch<React.SetStateAction<CarType | undefined>>;
     vehicles: CarType[] | undefined;
     odometer_last_reading: number;
+    setVehicles:React.Dispatch<React.SetStateAction<CarType[]|undefined>>;
 }
 
 
 
 
-const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_reading }: FuelEntryProps) => {
+const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicles, odometer_last_reading, setVehicles }: FuelEntryProps) => {
     const [step, setStep] = useState(1);
     const [date, setDate] = React.useState<Date>(() => new Date());
     const [activeVehicleForFuel, setActiveVehicleForFuel] = useState<CarType | undefined>(vehicles && vehicles.find((car) => car.name === activeVehicle));
@@ -105,8 +109,44 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
         setStep((prev) => prev - 1);
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setSubmitting(true);
+        try {
+            console.log("THIS IS DATA");
+            console.log(formData);
+            const res = await axios.post("/api/fuel", formData);
+            console.log("✅ Saved vehicle:", res.data);
+            toast.success("Fuel log has been created successfully");
+            if(activeVehicleForFuel){
+                setVehicles(prev =>
+                    prev.map(v => {
+                        console.log("1. OVDE--------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                        if (v.id !== activeVehicleForFuel.id) return v;
+                        console.log("2. OVDE--------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                        return {
+                            ...v,
+                            last_fill_up: Number(formData.fuelFilled),
+                            odometer: Number(formData.odometer),
+                            active:false,
+                            fuelData: [
+                                {
+                                    fuel_filled: Number(formData.fuelFilled),
+                                    date: new Date(formData.date),
+                                    total_price: Number(formData.totalPrice),
+                                    odometer: Number(formData.odometer),
+                                },
+                                ...(v?.fuelData ?? [])
+                            ]
+                        };
+                    })
+                );
+            }
+            setSubmitting(false);
+            setIsOpen(false);
+        } catch (err) {
+            console.error(err);
+            alert("❌ Failed to save vehicle");
+        }
     }
 
 
@@ -116,7 +156,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, vehicles, odometer_last_r
 
     useEffect(() => {
         //@ts-expect-error expected
-        handleChange("vehicle", (activeVehicleForFuel.name));
+        handleChange("vehicle", (activeVehicleForFuel.id));
         console.log(activeVehicleForFuel);
     }, [activeVehicleForFuel]);
 
