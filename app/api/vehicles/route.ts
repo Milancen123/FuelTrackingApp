@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { handleError } from "@/lib/handlers/error";
 import { CarType, FuelEntryType } from "@/types/car";
+import { IFuelLog } from "@/database/fuelLog.model";
 
 export async function GET(request: Request) {
     try {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
             last_fill_up: v.fuelData[v.fuelData.length - 1]?.fuelAmount ?? 0,
             odometer: Number(v.fuelData ? v.fuelData[v.fuelData.length - 1].odometer : v.odometer),
             active: false,
-            fuelData: v.fuelData?.map((f): FuelEntryType => ({
+            fuelData: v.fuelData?.map((f:IFuelLog): FuelEntryType => ({
                 fuel_filled: f.fuelAmount,
                 date: new Date(f.date),
                 total_price: f.price,
