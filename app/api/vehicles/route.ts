@@ -19,22 +19,22 @@ export async function GET(request: Request) {
 
         const userId = new mongoose.Types.ObjectId(id);
         const response = await getVehicles(userId);
-        if(!response) return;
+        if (!response) return;
         console.log("OVO JE RESPONSE KADA FECUJEMO VOZILA:");
         console.log("-------------------------------------------");
-        
-        const formatted:CarType[]= response.map(v => ({
+
+        const formatted: CarType[] = response.map(v => ({
             id: v._id,
             name: `${v.make} ${v.model}`,
             last_fill_up: v.fuelData[v.fuelData.length - 1]?.fuelAmount ?? 0,
             odometer: Number(v.fuelData ? v.fuelData[v.fuelData.length - 1].odometer : v.odometer),
-            active:false,
-            fuelData: v.fuelData?.map((f):FuelEntryType => ({
+            active: false,
+            fuelData: v.fuelData?.map((f): FuelEntryType => ({
                 fuel_filled: f.fuelAmount,
                 date: new Date(f.date),
                 total_price: f.price,
                 odometer: f.odometer,
-                average_consumption:f.average_consumption ?? 0.0,
+                average_consumption: f.average_consumption ?? 0.0,
             })) || [],
         }));
 
@@ -48,7 +48,12 @@ export async function GET(request: Request) {
         });
     } catch (err) {
         console.error(err);
-        return handleError(err, "api");
+        return NextResponse.json({
+            message: err,
+
+        }, {
+            status: 400
+        });
     }
 }
 
@@ -74,7 +79,7 @@ export async function POST(request: Request) {
             year,
             fuelType,
             odometer,
-        }); 
+        });
 
         console.log(newVehicle);
 
@@ -84,7 +89,12 @@ export async function POST(request: Request) {
         })
     } catch (err) {
         console.error(err);
-        return handleError(err, "api");
+        return NextResponse.json({
+            message: err,
+
+        }, {
+            status: 400
+        });
     }
 }
 

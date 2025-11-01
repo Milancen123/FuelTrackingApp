@@ -26,6 +26,11 @@ export async function GET(request: Request) {
 
     } catch (err) {
         console.error(err);
-        return handleError(err, "api");
+           return NextResponse.json({
+            message: err,
+            
+        }, {
+            status: 400
+        });
     }
 }

@@ -28,7 +28,12 @@ export async function POST(request: Request) {
         })
     } catch (err) {
         console.error(err);
-        return handleError(err, "api");
+           return NextResponse.json({
+            message: err,
+            
+        }, {
+            status: 400
+        });
     }
 }
 
@@ -60,6 +65,11 @@ export async function GET(request:Request){
         })
     }catch(err){
         console.log(err);
-        handleError(err, "api");
+           return NextResponse.json({
+            message: err,
+            
+        }, {
+            status: 400
+        });
     }
 }
