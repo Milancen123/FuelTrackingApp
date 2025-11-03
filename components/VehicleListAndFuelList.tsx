@@ -84,9 +84,9 @@ const VehicleListAndFuelList = ({vehiclesProp}:VehicleListAndFuelListProps) => {
                         </Button>
                     </div>
                 </div>
-                <div className='flex md:hidden justify-center mt-5'>
-                    <Carousel className="w-full max-w-xs">
-                        <CarouselContent>
+                <div className='flex md:hidden justify-center mt-5 gap-4' >
+                    <Carousel className="w-full max-w-xs gap-4 flex">
+                        <CarouselContent className='flex gap-4'>
 
                             {vehicles && vehicles.map((vehicle, index) => {
                                 console.log(vehicle);
@@ -99,9 +99,13 @@ const VehicleListAndFuelList = ({vehiclesProp}:VehicleListAndFuelListProps) => {
                                     />
                                 </CarouselItem>
                             })}
+                            <div className="max-w-[320px] min-w-[320px] max-h-[200px] min-h-[175] flex justify-center items-center shadow-sm  rounded-2xl bg-white border-1 border-gray-200  hover:border-gray-500 transition-border">
+                                <Button size="lg" className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow hover:cursor-pointer" onClick={() => setIsVehicleEntryOpen(true)}>
+                                    <Plus />
+                                </Button>
+                            </div>
                         </CarouselContent>
-                        <CarouselPrevious />
-                        <CarouselNext />
+                        
                     </Carousel>
 
                 </div>

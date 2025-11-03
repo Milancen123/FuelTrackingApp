@@ -108,7 +108,7 @@ export const updateVehicleStats = async (vehicleId: Types.ObjectId, average_cons
             { new: true },
         );
 
-        console.log("OVDE SAM SADAA", res);
+
 
         if (!res) throw new Error("Vehicle not found");
         return res;
