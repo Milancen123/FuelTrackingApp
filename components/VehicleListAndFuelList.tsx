@@ -134,7 +134,7 @@ const VehicleListAndFuelList = ({vehiclesProp}:VehicleListAndFuelListProps) => {
                         </div>
                     </Link>
                 </div>
-                <div className='flex flex-col gap-2 mt-5'>
+                <div className='flex flex-col gap-2 mt-5 md:mb-3 mb-8'>
                     {(activeVehicle && activeVehicle.fuelData) && activeVehicle.fuelData.map((fuelEntry) => (
                         <FuelCard
                             key={`${fuelEntry.date} ${fuelEntry.fuel_filled}`}
