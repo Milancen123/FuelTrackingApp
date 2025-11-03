@@ -4,6 +4,8 @@ import { auth } from '@clerk/nextjs/server';
 import axios from 'axios';
 import { CarType } from '@/types/car';
 import getAppUser from '@/lib/auth/getAppUser';
+import { compareLifetimeConsumption, totalAverageConsumption } from '@/lib/calculations/averageConsumption';
+import { compareMonthlyFuelCost, totalSpentThisMonth } from '@/lib/calculations/averagePrice';
 
 
 
@@ -24,20 +26,31 @@ const Page = async () => {
     cache:"no-store",
   });
   const rawFormatVehicles = await responseForVehicles.json();
-  console.log("---------------------------------------------------------------");
-  console.log(rawFormatVehicles);
-  const formattedVehicles:CarType[] = rawFormatVehicles.data.map((vehicle:CarType)=> {
-    return {
-      id: vehicle.id,
-      name: vehicle.name,
-      last_fill_up:vehicle.last_fill_up,
-      odometer: Number(vehicle.odometer),
-      active:false,
-      fuelData:vehicle.fuelData,
+ 
+  const formattedVehicles: CarType[] = rawFormatVehicles.data.map((vehicle: CarType) => {
+    if (vehicle.fuelData) {
+      const average_consumption = totalAverageConsumption(vehicle.fuelData ?? []);
+      const compare_for_last_month_consumption = compareLifetimeConsumption(vehicle.fuelData ?? []);
+      const monthly_cost = totalSpentThisMonth(vehicle.fuelData ?? []);
+      const compare_for_last_month_cost = compareMonthlyFuelCost(vehicle.fuelData ?? []);
+      return {
+        id: vehicle.id,
+        name: vehicle.name,
+        last_fill_up: vehicle.last_fill_up,
+        odometer: Number(vehicle.odometer),
+        active: false,
+        average_consumption,
+        compare_for_last_month_consumption,
+        monthly_cost,
+        compare_for_last_month_cost,
+        fuelData: vehicle.fuelData,
+      }
+    }else{
+      return [];
     }
-  })
-  console.log("asdklf;jsdflkasjdflkasdj")
-  console.log(formattedVehicles);
+    
+  });
+
 
 
   return (

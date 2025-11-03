@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get("mongoID");
-        console.log("id koji dobijam", id);
+
         if (!id) {
             return NextResponse.json({
                 message: "failed",
@@ -21,14 +21,12 @@ export async function GET(request: Request) {
         const userId = new mongoose.Types.ObjectId(id);
         const response = await getVehicles(userId);
         if (!response) return;
-        console.log("OVO JE RESPONSE KADA FECUJEMO VOZILA:");
-        console.log("-------------------------------------------");
 
         const formatted: CarType[] = response.map(v => ({
             id: v._id,
             name: `${v.make} ${v.model}`,
             last_fill_up: v.fuelData[v.fuelData.length - 1]?.fuelAmount ?? 0,
-            odometer: Number(v.fuelData ? v.fuelData[v.fuelData.length - 1].odometer : v.odometer),
+            odometer: Number((v.fuelData && v.fuelData.length >= 1) ? v.fuelData[v.fuelData.length - 1].odometer : v.odometer),
             active: false,
             fuelData: v.fuelData?.map((f:IFuelLog): FuelEntryType => ({
                 fuel_filled: f.fuelAmount,
@@ -39,8 +37,7 @@ export async function GET(request: Request) {
             })) || [],
         }));
 
-        console.log(JSON.stringify(formatted));
-        console.log("-------------------------------------------");
+        
         return NextResponse.json({
             message: "success",
             data: formatted,
@@ -71,7 +68,6 @@ export async function POST(request: Request) {
             );
         }
 
-        console.log({ make, model, year, fuelType, odometer });
         const userId = new mongoose.Types.ObjectId(mongoid);
         const newVehicle = await saveVehicleToDB({
             userId,
@@ -82,7 +78,6 @@ export async function POST(request: Request) {
             odometer,
         });
 
-        console.log(newVehicle);
 
         return NextResponse.json({
             success: true,

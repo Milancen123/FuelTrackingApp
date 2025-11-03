@@ -15,7 +15,6 @@ export async function GET(request: Request) {
             throw NotFoundError;
         }
         const result = await getUserByClerkId(clerkId);
-        console.log("result from db is: " + result);
 
         return NextResponse.json({
             message:"success",

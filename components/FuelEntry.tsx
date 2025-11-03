@@ -115,7 +115,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
             console.log("THIS IS DATA");
             console.log(formData);
             const res = await axios.post("/api/fuel", formData);
-            console.log("✅ Saved vehicle:", res.data);
+            console.log("✅ Saved fuelData:", res.data);
             toast.success("Fuel log has been created successfully");
             if(activeVehicleForFuel){
                 setVehicles(prev =>{
@@ -129,12 +129,17 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                             last_fill_up: Number(formData.fuelFilled),
                             odometer: Number(formData.odometer),
                             active:false,
+                            average_consumption:res.data.response ? res.data.response.average_consumption??0 : 0,
+                            compare_for_last_month_consumption:res.data.response ? res.data.response.compare_for_last_month_consumption??0 : 0,
+                            monthly_cost:res.data.response ? res.data.response.monthly_cost??0 : 0,
+                            compare_for_last_month_cost:res.data.response ? res.data.response.compare_for_last_month_cost??0 : 0,
                             fuelData: [
                                 {
                                     fuel_filled: Number(formData.fuelFilled),
                                     date: new Date(formData.date),
                                     total_price: Number(formData.totalPrice),
                                     odometer: Number(formData.odometer),
+                                    average_consumption:res.data.averageConsumptionBetweenTwoFillUps,
                                 },
                                 ...(v?.fuelData ?? [])
                             ]
