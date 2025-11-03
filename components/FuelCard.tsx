@@ -21,9 +21,9 @@ const FuelCard = ({ fuel_filled, date, total_price, average_consumption }: FuelC
                 </div>
             </div>
             <div>
-                <div className='flex flex-col leading-tight'>
-                    <h1 className='text-lg font-semibold m-0'>${total_price}</h1>
-                    <p className='text-sm text-gray-700'>{average_consumption}L/100km</p>
+                <div className='flex flex-col leading-tight items-center'>
+                    <h1 className='text-lg font-semibold m-0 self-end'>${total_price}</h1>
+                    <p className='text-sm text-gray-700 self-end'>{average_consumption === 0 ? <span className='font-semibold text-red-700'>Reference Value</span> : `${average_consumption.toFixed(2)}L/100km`}</p>
                 </div>
             </div>
         </div>

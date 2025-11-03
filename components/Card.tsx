@@ -19,13 +19,13 @@ const Card = ({ title, type, data, stats }: CardProps) => {
                 <p className='font-semibold text-gray-700'>{type==="consumption"? 'Avg Consumption':'Monthly Cost'}</p>
             </div>
             <div className='text-2xl font-bold'>
-                <h1>{type==="consumption"? `${data}L/100km`:`$${data}`}</h1>
+                <h1>{type==="consumption"? `${data.toFixed(2)}L/100km`:`$${data.toFixed(2)}`}</h1>
             </div>
             <div className={`flex gap-1 ${(stats > 0 ? 'text-red-800' : 'text-green-600')}`}>
                 {
                     stats > 0 ? <TrendingUp/> : <TrendingDown/>
                 }
-                <p>{stats > 0 && '+'}{type!=="consumption" && "$"}{stats} from last month</p>
+                <p>{stats > 0 && '+'}{type!=="consumption" && "$"}{stats.toFixed(2)} from last month</p>
 
             </div>
         </div>

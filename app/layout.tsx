@@ -51,7 +51,7 @@ export default function RootLayout({
             </SignedIn> */}
           </header>
           {children}
-          <Toaster richColors closeButton position="top-center" />
+          <Toaster richColors position="top-center" />
         </body>
       </html>
     </ClerkProvider>

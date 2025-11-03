@@ -60,7 +60,7 @@ const VehicleListAndFuelList = ({vehiclesProp}:VehicleListAndFuelListProps) => {
 
    
     return (
-        <div>
+        <div className='flex flex-col gap-4'>
             <div className='pt-5'>
                 <p className='text-lg font-bold'>My Vehicles</p>
 
@@ -140,7 +140,7 @@ const VehicleListAndFuelList = ({vehiclesProp}:VehicleListAndFuelListProps) => {
                             average_consumption={fuelEntry?.average_consumption ?? 0} 
                         />
                     ))}
-                    {!activeVehicle?.fuelData && (
+                    {!activeVehicle?.fuelData || (activeVehicle?.fuelData && activeVehicle?.fuelData.length <= 0) && (
                         <NoFuel/>
                     )}
                 </div>

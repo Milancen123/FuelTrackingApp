@@ -43,7 +43,7 @@ const Page = async () => {
         compare_for_last_month_consumption,
         monthly_cost,
         compare_for_last_month_cost,
-        fuelData: vehicle.fuelData,
+        fuelData: vehicle.fuelData.reverse(),
       }
     }else{
       return [];

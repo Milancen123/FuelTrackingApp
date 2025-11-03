@@ -139,7 +139,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                                     date: new Date(formData.date),
                                     total_price: Number(formData.totalPrice),
                                     odometer: Number(formData.odometer),
-                                    average_consumption:res.data.averageConsumptionBetweenTwoFillUps,
+                                    average_consumption: res.data.averageConsumptionBetweenTwoFillUps,
                                 },
                                 ...(v?.fuelData ?? [])
                             ]
