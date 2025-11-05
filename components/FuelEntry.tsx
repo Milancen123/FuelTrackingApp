@@ -151,6 +151,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                                     total_price: Number(formData.totalPrice),
                                     odometer: Number(formData.odometer),
                                     average_consumption: res.data.averageConsumptionBetweenTwoFillUps,
+                                    fullTank:formData.fullTank,
                                 },
                                 ...(v?.fuelData ?? [])
                             ]

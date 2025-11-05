@@ -127,7 +127,7 @@ export async function POST(request: Request) {
 
         console.log("SADA VRACAMO VEHICLE: ");
         // return vehicle with id to display the data about avg_consumption
-        const vehicleByIdReturned = await getVehicleByID(vehicle, false);
+        const vehicleByIdReturned = await getVehicleByID(vehicle);
         console.log(vehicleByIdReturned);
         return NextResponse.json({
             success:true,
