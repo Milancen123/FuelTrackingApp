@@ -21,6 +21,8 @@ import {
 import { CarType } from '@/types/car';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { Checkbox } from './ui/checkbox';
+import { Label } from './ui/label';
 
 
 
@@ -48,14 +50,23 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
         vehicle: activeVehicleForFuel,
         odometer: "",
         fuelFilled: 0.0,
+        fullTank:false,
         totalPrice: 0.0,
         date: new Date().toString(),
     });
 
 
     const handleChange = (field: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        if (field === "fullTank") {
+            if (value === "true") {
+                setFormData((prev) => ({ ...prev, [field]: true }));
+            } else {
+                setFormData((prev) => ({ ...prev, [field]: false }));
+            }
 
+        } else {
+            setFormData((prev) => ({ ...prev, [field]: value }));
+        }
     };
 
 
@@ -257,6 +268,10 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                             <h1 className='font-semibold'>Liters</h1>
                             <Input className='p-6 text-center' required placeholder='45.2' value={formData.fuelFilled !== 0 ? formData.fuelFilled : ''} onChange={(e) => handleChange("fuelFilled", e.target.value)} />
                             {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.fuelFilled}</p>)}
+                            <div className="flex items-center gap-3">
+                                <Label htmlFor="terms">Full Tank</Label>
+                                <Checkbox id="terms" onCheckedChange={(checked)=>handleChange("fullTank", (checked ? "true":"false"))}/>
+                            </div>
                         </div>
                     </div>
                 )}

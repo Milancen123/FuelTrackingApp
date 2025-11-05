@@ -10,7 +10,7 @@ import { totalSpentThisMonth, compareMonthlyFuelCost } from "@/lib/calculations/
 
 export async function POST(request: Request) {
     try {
-        const { vehicle, odometer, fuelFilled, totalPrice, date } = await request.json();
+        const { vehicle, odometer, fuelFilled, totalPrice, date, fullTank} = await request.json();
         console.log(vehicle, odometer, fuelFilled, totalPrice, date);
         if (!vehicle || !odometer || !fuelFilled || !totalPrice || !date) {
             return NextResponse.json(
@@ -18,6 +18,8 @@ export async function POST(request: Request) {
                 { status: 400, headers: { "Content-Type": "application/json" } }
             );
         }
+        console.log("OVO SAM DOBIO IZ JSONA");
+        console.log(vehicle, odometer, fuelFilled, totalPrice, date, fullTank);
         //1. fetch the data for the vehicle ID specifically fuel data
         //2. extract the fuelData for that vehicle for calculation
         /*
@@ -44,41 +46,73 @@ export async function POST(request: Request) {
 
 
         */
-
-        const vehicleData = await getFuelLogsForVehicleID(vehicle, true);
-        if(!vehicleData) {
-            throw new Error("No vehicles data found");
-        }
-
-        const formattedData:FuelEntryType[] = vehicleData.map((fuelData:IFuelLog)  => {
-            return {
-                fuel_filled: fuelData.fuelAmount,
-                date:new Date(fuelData.date),
-                total_price:fuelData.price,
-                odometer: fuelData.odometer,
+        if(fullTank) {
+            const vehicleData = await getFuelLogsForVehicleID(vehicle, true);
+            if (!vehicleData) {
+                throw new Error("No vehicles data found");
             }
-        });
 
-        formattedData.push({
-            fuel_filled:Number(fuelFilled),
-            date:new Date(date),
-            total_price:Number(totalPrice),
-            odometer:Number(odometer),
-        });
+            const formattedData: FuelEntryType[] = vehicleData.map((fuelData: IFuelLog) => {
+                return {
+                    fuel_filled: fuelData.fuelAmount,
+                    date: new Date(fuelData.date),
+                    total_price: fuelData.price,
+                    odometer: fuelData.odometer,
+                    fullTank: fuelData.fullTank,
+                }
+            });
+
+            formattedData.push({
+                fuel_filled: Number(fuelFilled),
+                date: new Date(date),
+                total_price: Number(totalPrice),
+                odometer: Number(odometer),
+                fullTank:fullTank,
+            });
+
+            //odradi kalkulaciju svih ostalih parametara
+            const average_consumption = totalAverageConsumption(formattedData ?? []);
+            const compare_for_last_month_consumption = compareLifetimeConsumption(formattedData ?? []);
+            const monthly_cost = totalSpentThisMonth(formattedData ?? []);
+            const compare_for_last_month_cost = compareMonthlyFuelCost(formattedData ?? []);
+
+            const updatedVehicle = await updateVehicleStats(vehicle, average_consumption, compare_for_last_month_consumption, monthly_cost, compare_for_last_month_cost);
+
+            const newFuelLog = await saveFuelLogToDB({
+                vehicleId: vehicle,
+                odometer,
+                fuelAmount: fuelFilled,
+                price: totalPrice,
+                date,
+                average_consumption: 0.0,
+                fullTank:fullTank,
+            });
 
 
-
-        const average_consumption = totalAverageConsumption(formattedData ?? []);
-        const compare_for_last_month_consumption = compareLifetimeConsumption(formattedData?? []);
-        const monthly_cost = totalSpentThisMonth(formattedData ?? []);
-        const compare_for_last_month_cost = compareMonthlyFuelCost(formattedData ?? []);
-
-
-        //the avg_coinsumption between two last fill ups (fuel_filled: number, current_odometer: number, previous_odometer: number)
-        const previous_odometer = (formattedData.length > 1) ? formattedData[formattedData.length - 2].odometer : 0;
-        const avg_consumption_between_two_last_fill_ups= (previous_odometer === 0 ? 0.0 : averageConsumptionBetweenTwoFillUps(fuelFilled, odometer, previous_odometer));
+            return NextResponse.json({
+                success: true,
+                response: updatedVehicle,
+                averageConsumptionBetweenTwoFillUps: 0.0,
+            });
+        }
         
-        const updatedVehicle = await updateVehicleStats(vehicle, average_consumption, compare_for_last_month_consumption, monthly_cost, compare_for_last_month_cost);
+        
+
+        
+
+
+
+        // const average_consumption = totalAverageConsumption(formattedData ?? []);
+        // const compare_for_last_month_consumption = compareLifetimeConsumption(formattedData?? []);
+        // const monthly_cost = totalSpentThisMonth(formattedData ?? []);
+        // const compare_for_last_month_cost = compareMonthlyFuelCost(formattedData ?? []);
+
+
+        // //the avg_coinsumption between two last fill ups (fuel_filled: number, current_odometer: number, previous_odometer: number)
+        // const previous_odometer = (formattedData.length > 1) ? formattedData[formattedData.length - 2].odometer : 0;
+        // const avg_consumption_between_two_last_fill_ups= (previous_odometer === 0 ? 0.0 : averageConsumptionBetweenTwoFillUps(fuelFilled, odometer, previous_odometer));
+        
+
 
 
         const newFuelLog = await saveFuelLogToDB({
@@ -87,16 +121,18 @@ export async function POST(request: Request) {
             fuelAmount:fuelFilled,
             price:totalPrice,
             date,
-            average_consumption:avg_consumption_between_two_last_fill_ups,
+            average_consumption:0,
+            fullTank:fullTank,
         });
 
-
-
+        console.log("SADA VRACAMO VEHICLE: ");
+        // return vehicle with id to display the data about avg_consumption
+        const vehicleByIdReturned = await getVehicleByID(vehicle, false);
+        console.log(vehicleByIdReturned);
         return NextResponse.json({
             success:true,
-            response:updatedVehicle,
-            averageConsumptionBetweenTwoFillUps:avg_consumption_between_two_last_fill_ups ?? 0.0,
-        })
+            response:vehicleByIdReturned,
+        });
     } catch (err) {
         console.error(err);
            return NextResponse.json({

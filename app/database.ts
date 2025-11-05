@@ -7,27 +7,28 @@ import { CarType } from "@/types/car";
 import { model, models, Schema, Types } from "mongoose";
 
 
-export const getVehicleByID = async (vehicleId: Types.ObjectId) => {
+export const getVehicleByID = async (vehicleId: Types.ObjectId, fuelLogs:boolean=true) => {
     try {
         await dbConnect();
-        const vehicleData = await Vehicle.aggregate([
-            { $match: { _id: vehicleId } },
-            {
-                $lookup: {
-                    from: "fuellogs",
-                    localField: "_id",
-                    foreignField: "vehicleId",
-                    as: "fuelData"
+        if(!fuelLogs) {
+            const vehicleData = await Vehicle.findById(vehicleId);
+            return vehicleData;
+        }else{
+            const vehicleData = await Vehicle.aggregate([
+                { $match: { _id: vehicleId } },
+                {
+                    $lookup: {
+                        from: "fuellogs",
+                        localField: "_id",
+                        foreignField: "vehicleId",
+                        as: "fuelData"
+                    }
                 }
-            }
-        ]);
+            ]);
 
+            return vehicleData;
+        }
 
-
-
-
-
-        return vehicleData;
 
     } catch (error) {
         console.error(error);
@@ -143,7 +144,7 @@ export const getFuelLogsForVehicleID = async (vehicleId: Types.ObjectId, calcula
 
 
 
-export const saveFuelLogToDB = async ({ vehicleId, odometer, fuelAmount, price, date, average_consumption }: IFuelLog) => {
+export const saveFuelLogToDB = async ({ vehicleId, odometer, fuelAmount, price, date, average_consumption, fullTank }: IFuelLog) => {
     try {
         await dbConnect();
 
@@ -153,7 +154,8 @@ export const saveFuelLogToDB = async ({ vehicleId, odometer, fuelAmount, price, 
             average_consumption,
             fuelAmount,
             price,
-            date
+            date,
+            fullTank,
         });
     } catch (err) {
         handleError(err, "api");

@@ -28,12 +28,16 @@ export async function GET(request: Request) {
             last_fill_up: v.fuelData[v.fuelData.length - 1]?.fuelAmount ?? 0,
             odometer: Number((v.fuelData && v.fuelData.length >= 1) ? v.fuelData[v.fuelData.length - 1].odometer : v.odometer),
             active: false,
+            average_consumption: v.average_consumption, // Overall average consumption (L/100km)
+            compare_for_last_month_consumption: v.compare_for_last_month_consumption,// % difference vs last month     // Monthly fuel cost
+            compare_for_last_month_cost: v.compare_for_last_month_cost, // % difference vs last month cost
             fuelData: v.fuelData?.map((f:IFuelLog): FuelEntryType => ({
                 fuel_filled: f.fuelAmount,
                 date: new Date(f.date),
                 total_price: f.price,
                 odometer: f.odometer,
                 average_consumption: f.average_consumption ?? 0.0,
+                fullTank:f.fullTank,
             })) || [],
         }));
 

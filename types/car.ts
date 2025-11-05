@@ -4,6 +4,7 @@ export interface FuelEntryType {
   total_price: number;        // Total price in chosen currency
   odometer:number;
   average_consumption?: number; // L/100km for this fill-up
+  fullTank:boolean;
 };
 
 export interface CarType {

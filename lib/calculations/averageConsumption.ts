@@ -25,24 +25,44 @@ export const averageConsumptionBetweenTwoFillUps = (fuel_filled: number, current
     return Math.round(average_consumption * 100) / 100;
 }
 
+
+
 export const totalAverageConsumption = (fuelData: FuelEntryType[]): number => {
 
     if (fuelData.length <= 1) return 0;
 
-    const average_consumptions: number[] = [];
-    for (let i = 1; i < fuelData.length; i += 1) {
-        const previous_odometer = Number(fuelData[i - 1].odometer);
-        const current_odometer = Number(fuelData[i].odometer);
-        const fuel_filled = Number(fuelData[i].fuel_filled);
-        const averageConsumption = averageConsumptionBetweenTwoFillUps(fuel_filled, current_odometer, previous_odometer);
-        average_consumptions.push(averageConsumption);
+    const averageConsumptions = [];
+    for(let i = 0; i < fuelData.length; i++) {
+        if(fuelData[i].fullTank){
+            let totalFuelFilled = 0 - fuelData[i].fuel_filled;
+            const firstFuelTankEntryOdometer = Number(fuelData[i].odometer);
+            let difference = 0;
+            console.log("--------------------------------------------------------");
+            console.log("Prvi: ", fuelData[i]);
+            do{
+                totalFuelFilled += Number(fuelData[i].fuel_filled);
+                i++;
+            }while(i < fuelData.length && !fuelData[i].fullTank );
+            console.log("Poslednji: ", fuelData[i]);
+            if(i <= fuelData.length - 1 && fuelData[i].fullTank) {
+                totalFuelFilled += Number(fuelData[i].fuel_filled);
+                console.log("Total fuel filled: ", totalFuelFilled);
+                difference = fuelData[i].odometer - firstFuelTankEntryOdometer;
+                console.log("Total distance travelled: ", difference);
+                const avgCons = (totalFuelFilled * 100) / difference;
+                console.log("Avg cons: ", avgCons);
+                averageConsumptions.push(avgCons);
+                i--;
+            }else{
+                const avgCons = 0;
+            }  
+        }else{
+            continue;
+        }
     }
-
-
-    const totalAverage = calculateAverage(average_consumptions);
-
+    console.log(averageConsumptions);
+    const totalAverage = calculateAverage(averageConsumptions);
     return totalAverage;
-
 };
 
 export const compareLifetimeConsumption = (fuelData: FuelEntryType[]): number => {
@@ -55,24 +75,17 @@ export const compareLifetimeConsumption = (fuelData: FuelEntryType[]): number =>
     const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
     const previousMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
 
-    const lifetimeUntilPrev: number[] = [];
-    const lifetimeUntilCurr: number[] = [];
+    const lifetimeUntilPrev: FuelEntryType[] = [];
+    const lifetimeUntilCurr: FuelEntryType[] = [];
 
     for (let i = 1; i < fuelData.length; i++) {
-        const prev = fuelData[i - 1];
-        const curr = fuelData[i];
 
-        const avg = averageConsumptionBetweenTwoFillUps(
-            curr.fuel_filled,
-            curr.odometer,
-            prev.odometer
-        );
 
-        const month = new Date(curr.date).getMonth();
-        const year = new Date(curr.date).getFullYear();
+        const month = new Date(fuelData[i].date).getMonth();
+        const year = new Date(fuelData[i].date).getFullYear();
 
         // Always push into lifetime until current month
-        lifetimeUntilCurr.push(avg);
+        lifetimeUntilCurr.push(fuelData[i]);
 
         // Only push if before this month
         const isBeforeCurrentMonth =
@@ -80,7 +93,7 @@ export const compareLifetimeConsumption = (fuelData: FuelEntryType[]): number =>
             (year === currentYear && month < currentMonth);
 
         if (isBeforeCurrentMonth) {
-            lifetimeUntilPrev.push(avg);
+            lifetimeUntilPrev.push(fuelData[i]);
         }
     }
 
@@ -88,11 +101,13 @@ export const compareLifetimeConsumption = (fuelData: FuelEntryType[]): number =>
         return 0;
     }
 
-    const avgPrev =
-        lifetimeUntilPrev.reduce((a, b) => a + b, 0) / lifetimeUntilPrev.length;
 
-    const avgCurr =
-        lifetimeUntilCurr.reduce((a, b) => a + b, 0) / lifetimeUntilCurr.length;
+    const avgPrev = totalAverageConsumption(lifetimeUntilPrev);
+
+    const avgCurr = totalAverageConsumption(lifetimeUntilCurr);
+
+    if(!avgCurr || !avgPrev) return 0;
+
 
     return ((avgPrev - avgCurr) / avgPrev) * 100;
 };

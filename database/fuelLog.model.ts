@@ -7,6 +7,7 @@ export interface IFuelLog {
   fuelAmount: number;
   price: number;
   date: Date;
+  fullTank:boolean;
 }
 
 const FuelLogSchema = new Schema<IFuelLog>(
@@ -17,6 +18,7 @@ const FuelLogSchema = new Schema<IFuelLog>(
     fuelAmount: { type: Number, required: true },
     price: { type: Number, required: true },
     date: { type: Date, required: true },
+    fullTank:{type:Boolean, required:true},
   },
   {
     timestamps: true,

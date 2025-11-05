@@ -29,8 +29,6 @@ const Page = async () => {
  
   const formattedVehicles: CarType[] = rawFormatVehicles.data.map((vehicle: CarType) => {
     if (vehicle.fuelData) {
-      const average_consumption = totalAverageConsumption(vehicle.fuelData ?? []);
-      const compare_for_last_month_consumption = compareLifetimeConsumption(vehicle.fuelData ?? []);
       const monthly_cost = totalSpentThisMonth(vehicle.fuelData ?? []);
       const compare_for_last_month_cost = compareMonthlyFuelCost(vehicle.fuelData ?? []);
       return {
@@ -39,8 +37,8 @@ const Page = async () => {
         last_fill_up: vehicle.last_fill_up,
         odometer: Number(vehicle.odometer),
         active: false,
-        average_consumption,
-        compare_for_last_month_consumption,
+        average_consumption:vehicle.average_consumption,
+        compare_for_last_month_consumption:vehicle.compare_for_last_month_consumption,
         monthly_cost,
         compare_for_last_month_cost,
         fuelData: vehicle.fuelData.reverse(),
