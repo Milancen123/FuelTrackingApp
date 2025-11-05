@@ -35,6 +35,7 @@ const allVehicles: CarType[] = [
         total_price: 4320,
         odometer: 123123,
         average_consumption: 14.5,
+        fullTank:true,
       },
       {
         fuel_filled: 38.7,
@@ -42,6 +43,7 @@ const allVehicles: CarType[] = [
         total_price: 3785,
         odometer: 123123,
         average_consumption: 13.8,
+        fullTank:true,
       },
       {
         fuel_filled: 52.1,
@@ -49,6 +51,7 @@ const allVehicles: CarType[] = [
         total_price: 5170,
         odometer: 123123,
         average_consumption: 15.2,
+        fullTank:true,
       },
       {
         fuel_filled: 41.6,
@@ -56,6 +59,7 @@ const allVehicles: CarType[] = [
         total_price: 4125,
         odometer: 123123,
         average_consumption: 14.1,
+        fullTank:true,
       },
       {
         fuel_filled: 47.3,
@@ -63,6 +67,7 @@ const allVehicles: CarType[] = [
         total_price: 4680,
         odometer: 123123,
         average_consumption: 14.8,
+        fullTank:true,
       },
     ]
   },
@@ -82,6 +87,7 @@ const allVehicles: CarType[] = [
         total_price: 4320,
         odometer: 78900,
         average_consumption: 14.5,
+        fullTank:true,
       },
       {
         fuel_filled: 38.7,
@@ -89,6 +95,7 @@ const allVehicles: CarType[] = [
         total_price: 3785,
         odometer: 123123,
         average_consumption: 13.8,
+        fullTank:true,
       },
       {
         fuel_filled: 52.1,
@@ -96,6 +103,7 @@ const allVehicles: CarType[] = [
         total_price: 5170,
         odometer: 123123,
         average_consumption: 15.2,
+        fullTank:true,
       },
       {
         fuel_filled: 41.6,
@@ -103,6 +111,7 @@ const allVehicles: CarType[] = [
         total_price: 4125,
         odometer: 123123,
         average_consumption: 14.1,
+        fullTank:true,
       },
       {
         fuel_filled: 47.3,
@@ -110,6 +119,7 @@ const allVehicles: CarType[] = [
         total_price: 4680,
         odometer: 123123,
         average_consumption: 14.8,
+        fullTank:true,
       },
     ]
   }
