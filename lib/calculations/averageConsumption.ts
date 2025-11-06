@@ -32,36 +32,17 @@ export const totalAverageConsumption = (fuelData: FuelEntryType[]): number => {
     if (fuelData.length <= 1) return 0;
 
     const averageConsumptions = [];
-    for(let i = 0; i < fuelData.length; i++) {
-        if(fuelData[i].fullTank){
-            let totalFuelFilled = 0 - fuelData[i].fuel_filled;
-            const firstFuelTankEntryOdometer = Number(fuelData[i].odometer);
-            let difference = 0;
-            console.log("--------------------------------------------------------");
-            console.log("Prvi: ", fuelData[i]);
-            do{
-                totalFuelFilled += Number(fuelData[i].fuel_filled);
-                i++;
-            }while(i < fuelData.length && !fuelData[i].fullTank );
-            console.log("Poslednji: ", fuelData[i]);
-            if(i <= fuelData.length - 1 && fuelData[i].fullTank) {
-                totalFuelFilled += Number(fuelData[i].fuel_filled);
-                console.log("Total fuel filled: ", totalFuelFilled);
-                difference = fuelData[i].odometer - firstFuelTankEntryOdometer;
-                console.log("Total distance travelled: ", difference);
-                const avgCons = (totalFuelFilled * 100) / difference;
-                console.log("Avg cons: ", avgCons);
-                averageConsumptions.push(avgCons);
-                i--;
-            }else{
-                const avgCons = 0;
-            }  
-        }else{
-            continue;
-        }
+    //sum of all fuel filled except the first referent one * 100
+    //total_distance = last_odometer - first_odometer
+    //sumFuel/total_distance L/100km
+    let totalFuel = 0;
+    const totalDistance = fuelData[fuelData.length - 1].odometer - fuelData[0].odometer;
+    for(let i = 1; i < fuelData.length; i++) {
+        totalFuel += fuelData[i].fuel_filled;
     }
-    console.log(averageConsumptions);
-    const totalAverage = calculateAverage(averageConsumptions);
+
+
+    const totalAverage = (totalFuel * 100) / totalDistance;
     return totalAverage;
 };
 
