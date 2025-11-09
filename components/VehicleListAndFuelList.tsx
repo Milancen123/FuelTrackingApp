@@ -146,7 +146,7 @@ const VehicleListAndFuelList = ({vehiclesProp}:VehicleListAndFuelListProps) => {
                     ))}
                     {!activeVehicle?.fuelData || (activeVehicle?.fuelData && activeVehicle?.fuelData.length <= 0) && (
                         <NoFuel/>
-                    )}
+                    )}              
                 </div>
             </div>
             <div className="fixed bottom-20 right-4 sm:right-6 z-10">

@@ -47,6 +47,13 @@ export async function POST(request: Request) {
 
         */
         if(fullTank) {
+            //also get the info on the first odometer value for that vehicle
+            console.log("OVO JE STO SALJEM U FUNKCIJU");
+            console.log(vehicle);
+            const objectId = new mongoose.Types.ObjectId(vehicle);
+            const vehicleAllData = await getVehicleByID(objectId);
+            const firstOdometerValue = vehicleAllData[0].odometer;
+
             const vehicleData = await getFuelLogsForVehicleID(vehicle, true);
             if (!vehicleData) {
                 throw new Error("No vehicles data found");
@@ -71,8 +78,8 @@ export async function POST(request: Request) {
             });
 
             //odradi kalkulaciju svih ostalih parametara
-            const average_consumption = totalAverageConsumption(formattedData ?? []);
-            const compare_for_last_month_consumption = compareLifetimeConsumption(formattedData ?? []);
+            const average_consumption = totalAverageConsumption(formattedData ?? [], firstOdometerValue);
+            const compare_for_last_month_consumption = compareLifetimeConsumption(formattedData ?? [], firstOdometerValue);
             const monthly_cost = totalSpentThisMonth(formattedData ?? []);
             const compare_for_last_month_cost = compareMonthlyFuelCost(formattedData ?? []);
 
