@@ -37,10 +37,17 @@ interface NavbarProps {
 
 const Navbar = ({ activeTab }: NavbarProps) => {
   const pathname = usePathname();
- 
-  
+
+
   return (
-    <div className='fixed w-full bottom-0 left-0 right-0 border-1 border-gray-400 bg-white flex md:justify-center justify-between md:gap-30 p-3 text-gray-500'>
+    <div className='  fixed bottom-0 left-0 right-0 
+  w-full 
+  border-t border-gray-300 
+  bg-white 
+  flex justify-between md:justify-center md:gap-20 
+  p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] 
+  text-gray-500 
+  z-50'>
       {items.map((item) => {
         const Icon = item.icon;
 
