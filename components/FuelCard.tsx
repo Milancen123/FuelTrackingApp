@@ -22,7 +22,7 @@ const FuelCard = ({ fuel_filled, date, total_price, average_consumption }: FuelC
             </div>
             <div>
                 <div className='flex flex-col leading-tight items-center'>
-                    <h1 className='text-lg font-semibold m-0 self-end'>${total_price}</h1>
+                    <h1 className='text-lg font-semibold m-0 self-end'>€{total_price}</h1>
                 </div>
             </div>
         </div>

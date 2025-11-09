@@ -53,7 +53,7 @@ const FuelLogCard = ({ date, totalPrice, pricePerLiter, volume, odometer }: Fuel
           <h1 className='text-sm'>{format(date, "PPP")}</h1>
         </div>
         <div>
-          <h1 className='text-xl font-bold'>${totalPrice}</h1>
+          <h1 className='text-xl font-bold'>€{totalPrice}</h1>
           <p className='text-sm text-gray-500 text-right'>${pricePerLiter.toFixed(2)}/l</p>
         </div>
       </div>
@@ -61,7 +61,7 @@ const FuelLogCard = ({ date, totalPrice, pricePerLiter, volume, odometer }: Fuel
         <div className='flex gap-8'>
           <div className=''>
             <h1 className='text-gray-500 text-sm'>Volume</h1>
-            <h1 className='text-md font-semibold'>{volume} L</h1>
+            <h1 className='text-md font-semibold'>{volume} l</h1>
           </div>
           <div className=''>
             <h1 className='text-gray-500 text-sm'>Odometer</h1>
