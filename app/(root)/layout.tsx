@@ -5,7 +5,7 @@ import React, { ReactNode } from 'react'
 
 const layout = ({ children }: { children: ReactNode }) => {
     return (
-        <div className='min-h-[100svh] flex flex-col'>
+        <div className='min-h-[100svh] flex flex-col bg-white border-blue-500'>
             <SignedIn>
 
                 <AppUserProvider>
@@ -19,7 +19,7 @@ const layout = ({ children }: { children: ReactNode }) => {
                         </div>
                         {children}
                     </div>
-                    {/* <Navbar activeTab={"Home"} /> */}
+                    <Navbar activeTab={"Home"} />
                 </AppUserProvider>
             </SignedIn>
         </div>

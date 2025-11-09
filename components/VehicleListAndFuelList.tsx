@@ -60,7 +60,7 @@ const VehicleListAndFuelList = ({vehiclesProp}:VehicleListAndFuelListProps) => {
 
    
     return (
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-4 border-red-600'>
             <div className='pt-5'>
                 <p className='text-lg font-bold'>My Vehicles</p>
 
