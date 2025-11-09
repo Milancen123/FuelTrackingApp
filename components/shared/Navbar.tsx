@@ -40,14 +40,7 @@ const Navbar = ({ activeTab }: NavbarProps) => {
 
 
   return (
-    <div className='  fixed bottom-0 left-0 right-0 
-  w-full 
-  border-t border-gray-300 
-  bg-white 
-  flex justify-between md:justify-center md:gap-20 
-  p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] 
-  text-gray-500 
-  z-50'>
+    <div className='fixed bottom-0 inset-x-0 border-t border-gray-300 bg-white flex justify-between p-3 pb-[env(safe-area-inset-bottom)] text-gray-500 z-50'>
       {items.map((item) => {
         const Icon = item.icon;
 

@@ -5,8 +5,9 @@ import React, { ReactNode } from 'react'
 
 const layout = ({ children }: { children: ReactNode }) => {
     return (
-        <SignedIn>
-            <div className='min-h-[100svh] flex flex-col'>
+        <div className='min-h-[100svh] flex flex-col'>
+            <SignedIn>
+
                 <AppUserProvider>
                     <div className='p-5'>
                         <div className='flex justify-between items-center'>
@@ -20,8 +21,8 @@ const layout = ({ children }: { children: ReactNode }) => {
                     </div>
                     <Navbar activeTab={"Home"} />
                 </AppUserProvider>
-            </div>
-        </SignedIn>
+            </SignedIn>
+        </div>
     )
 }
 
