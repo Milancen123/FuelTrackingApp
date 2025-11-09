@@ -19,7 +19,7 @@ const layout = ({ children }: { children: ReactNode }) => {
                         </div>
                         {children}
                     </div>
-                    <Navbar activeTab={"Home"} />
+                    {/* <Navbar activeTab={"Home"} /> */}
                 </AppUserProvider>
             </SignedIn>
         </div>
