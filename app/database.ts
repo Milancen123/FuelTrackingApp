@@ -1,3 +1,4 @@
+import { FuelLogCardProps } from "@/components/FuelLogCard";
 import FuelLog, { IFuelLog } from "@/database/fuelLog.model";
 import User from "@/database/user.model";
 import Vehicle, { IVehicle } from "@/database/vehicle.model";
@@ -56,6 +57,10 @@ export const getVehicles = async (userId: Types.ObjectId) => {
                 }
             }
         ]);
+
+        console.log(vehicles);
+        console.log("---------------------------------");
+        console.log(userId);
 
         return vehicles;
     } catch (error) {
@@ -176,3 +181,45 @@ export const getUserByClerkId = async (clerkId: string) => {
 
 
 
+export const getFuelLogsByPage = async (
+  page: number,
+  vehicleId?:string,
+):Promise<FuelLogCardProps[]> => {
+  try {
+    await dbConnect();
+
+    const pageSize = 15;
+    const skip = (page - 1) * pageSize;
+
+    const query: Record<string, unknown> = {};
+    if(!vehicleId) return [];
+    if (vehicleId) query.vehicleId = vehicleId; // only fetch logs for this user
+    console.log("A o kom vehicleId rec");
+    console.log(vehicleId);
+    const logs = await FuelLog.find(query)
+      .sort({ date: -1 })       // newest first
+      .skip(skip)
+      .limit(pageSize)                  // return plain JS objects
+      .lean();
+
+
+
+    const formatted = logs.map((log)=> {
+        return {
+            id: String(log._id),
+            date: log.date,
+            totalPrice: Number(log.price),
+            pricePerLiter: Number(log.price) / Number(log.fuelAmount),
+            volume: Number(log.fuelAmount),
+            odometer: Number(log.odometer),
+        }
+    })
+
+
+    return formatted;
+  } catch (err) {
+    console.error("Error fetching fuel logs:", err);
+    handleError(err, "api");
+    return [];
+  }
+};

@@ -18,9 +18,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Types } from 'mongoose';
+import Link from 'next/link';
 
 
-interface FuelLogCardProps {
+export interface FuelLogCardProps {
+  id:string,
   date: Date,
   totalPrice: number,
   pricePerLiter: number,
@@ -28,7 +31,7 @@ interface FuelLogCardProps {
   odometer: number
 }
 
-const FuelLogCard = ({ date, totalPrice, pricePerLiter, volume, odometer }: FuelLogCardProps) => {
+const FuelLogCard = ({ id, date, totalPrice, pricePerLiter, volume, odometer }: FuelLogCardProps) => {
   const [deleting, setDeleting] = useState(false);
 
   const handleDeleting = ()=>{
@@ -44,7 +47,7 @@ const FuelLogCard = ({ date, totalPrice, pricePerLiter, volume, odometer }: Fuel
   }
   
   return (
-    <div className='p-4 border-1 border-gray-300 rounded-xl shadow-sm'>
+    <div className='p-4 border-1 border-gray-300 rounded-xl shadow-sm w-full'>
       <div className='flex justify-between border-b-1 border-b-gray-300 pb-4'>
         <div className='flex gap-2 items-center'>
           <div className='p-2 bg-gray-100 rounded-lg'>
@@ -72,12 +75,14 @@ const FuelLogCard = ({ date, totalPrice, pricePerLiter, volume, odometer }: Fuel
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <SquarePen size={20} color="#006eff" />
+              <Link href={`/fuel/${id}/`}>
+                <Button className='bg-white hover:bg-gray-200 hover:cursor-pointer p-2 rounded-xl'>
+                  <SquarePen size={20} color="#006eff" />
+                </Button>
+              </Link>
             </TooltipTrigger>
             <TooltipContent>
-              <Button>
-                
-              </Button>
+
               <p>Edit this fuel log</p>
             </TooltipContent>
           </Tooltip>
@@ -88,7 +93,7 @@ const FuelLogCard = ({ date, totalPrice, pricePerLiter, volume, odometer }: Fuel
             <TooltipTrigger asChild>
               <Dialog>
                 <DialogTrigger className='bg-white hover:bg-gray-200 hover:cursor-pointer p-2 rounded-xl'>
-                  <Trash size={20} color="#ff0000" />
+                  <Trash size={15} color="#ff0000" />
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
