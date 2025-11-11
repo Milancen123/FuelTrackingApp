@@ -20,6 +20,7 @@ import CarListLogPage from '@/components/CarListLogPage';
 import { LogPageVehicle } from '@/app/(root)/log/page';
 import NoFuel from './NoFuel';
 import { Button } from './ui/button';
+import { IgetVehicleStats } from '@/app/database';
 
 
 
@@ -133,18 +134,15 @@ const allVehicles: CarType[] = [
 interface LogPageProps {
     allVehicles: LogPageVehicle[] | [],
     fuelLogs: FuelLogCardProps[] | [],
+    vehicleStats:IgetVehicleStats,
 }
 
 
 
-const LogPage = ({ allVehicles, fuelLogs }: LogPageProps) => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
+const LogPage = ({ allVehicles, fuelLogs, vehicleStats}: LogPageProps) => {
+    
 
-    const vehicleQuery = searchParams.get("vehicle");
-    const defaultVehicle: string = vehicleQuery || allVehicles[0].name;
-
-
+    const defaultVehicle: string =  allVehicles[0].name;
 
     //fetch available vehicles from the database
     const [activeVehicle, setActiveVehicle] = useState<LogPageVehicle>(allVehicles.find((vehicle) => (vehicle.name === defaultVehicle)) || allVehicles[0]);
@@ -191,8 +189,7 @@ const LogPage = ({ allVehicles, fuelLogs }: LogPageProps) => {
         <div className='flex flex-col gap-4'>
             <CarListLogPage vehicles={vehicles} setActiveVehicle={setActiveVehicle} activeVehicle={activeVehicle} />
 
-            <VehicleStats totalDistance={1000} totalFuel={950} totalCost={1000} />
-
+            <VehicleStats totalDistance={vehicleStats.totalDistance} totalFuel={vehicleStats.totalFuel} totalCost={vehicleStats.totalCost} />
 
             <div className='flex flex-col gap-2 justify-center items-center'>
                 {loading ? (

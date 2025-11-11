@@ -129,11 +129,8 @@ export const updateVehicleStats = async (vehicleId: Types.ObjectId, average_cons
 export const getFuelLogsForVehicleID = async (vehicleId: Types.ObjectId, calculation: boolean) => {
     try {
         await dbConnect();
-        console.log("--------------------------/n")
-        console.log("Ovde sam");
-        console.log("/n/n/n/n/n/n/n/n/n/n/n/n/n/n/n/n/n");
+        
         if (!calculation) {
-            console.log("ALI SAD SAM OVDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEee");
             const fuelLogs1 = await FuelLog.find({ vehicleId }).limit(10);
             return fuelLogs1;
         } else {
@@ -223,3 +220,71 @@ export const getFuelLogsByPage = async (
     return [];
   }
 };
+
+
+export interface IgetVehicleStats{
+    totalDistance:number,
+    totalFuel:number,
+    totalCost:number,
+}
+
+
+export const getVehicleStats = async (vehicleId:Types.ObjectId):Promise<IgetVehicleStats>=>{
+    try{
+        //get the vehicle data extract the first odom value
+        // get all fuel logs for the vehicle
+        //caluclate totalDIstance last - first
+        // calculate totalFuel 
+        // calculate totalCost
+        if(!vehicleId) return {
+            totalDistance:0,
+            totalFuel:0,
+            totalCost:0,
+        }
+
+        const overallVehicleData = await getVehicleByID(vehicleId);
+        console.log("This is overall vehicle data");
+        console.log(overallVehicleData);
+
+        const firstOdometer = Number(overallVehicleData[0].odometer);
+
+        const fuelData = await getFuelLogsForVehicleID(vehicleId, true);
+        if(!fuelData) return {
+            totalDistance:0,
+            totalFuel:0,
+            totalCost:0,
+        };
+
+
+        
+        const totalDistance = fuelData[fuelData.length - 1].odometer - firstOdometer;
+
+        let totalFuel = 0;
+        let totalCost = 0;
+
+        for(let i = 0; i < fuelData.length; i++){
+            totalFuel += fuelData[i].fuelAmount;
+            totalCost += fuelData[i].price;
+        }
+
+        console.log(
+            totalDistance, totalFuel, totalCost
+        );
+
+        return {
+            totalDistance,
+            totalFuel,
+            totalCost,
+        }
+        
+    }catch(err){
+        console.error(err);
+        handleError(err, "api");
+        return {
+            totalDistance:0,
+            totalFuel:0,
+            totalCost:0,
+        }
+
+    }
+}

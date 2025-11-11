@@ -1,5 +1,5 @@
 
-import { getFuelLogsByPage, getVehicles } from '@/app/database';
+import { getFuelLogsByPage, getVehicles, getVehicleStats, IgetVehicleStats } from '@/app/database';
 import { FuelLogCardProps } from '@/components/FuelLogCard';
 import LogPage from '@/components/LogPage';
 import getAppUser from '@/lib/auth/getAppUser';
@@ -7,6 +7,7 @@ import { compareMonthlyFuelCost, totalSpentThisMonth } from '@/lib/calculations/
 import { CarType } from '@/types/car';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import mongoose from "mongoose";
 
 import React from 'react'
 // import {
@@ -172,8 +173,13 @@ const Page = async () => {
   //fetch server side the fuel log for the first vehicle in the list
   const fuelLogs:FuelLogCardProps[] = await getFuelLogsByPage(1, vehicles[0].id);
   //get the vehicles data totalDistance, totalFuel, totalCost
-  console.log("Da li vraca dobar fuelLogs");
-  console.log(fuelLogs);
+  
+
+  const vehicleStats:IgetVehicleStats = await getVehicleStats(new mongoose.Types.ObjectId(vehicles[0].id));
+  
+
+
+
 
 
 
@@ -183,7 +189,7 @@ const Page = async () => {
       <div className='pt-5'>
         <p className='text-lg font-bold'>Fuel Log</p>
       </div>
-      <LogPage allVehicles={vehicles} fuelLogs={fuelLogs}/>
+      <LogPage allVehicles={vehicles} fuelLogs={fuelLogs} vehicleStats={vehicleStats}/>
     </div>
   )
 }

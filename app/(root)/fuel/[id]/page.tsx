@@ -4,9 +4,11 @@ import React from 'react'
 
 
 
-const page = () => {
-    // 1. Define your form.
+const page = async () => {
+    //  fetch the data associated with this record
     
+    // send the data as props to the FuelLogEdit component
+    //
     return (
         <div>
             <FuelLogEdit/>
