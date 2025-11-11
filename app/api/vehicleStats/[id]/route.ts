@@ -5,17 +5,17 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 
 
-export async function GET(request:Request, { params }: { params: { id: string } }) {
+export async function GET(request:Request, context: { params: Promise<{ id: string }> } ) {
     try{
         const {userId} = await auth();
-        // if(!userId) {
-        //     return NextResponse.json({
-        //         message:"Not Authorized"
-        //     }, {
-        //         status:401,
-        //     })
-        // }
-        const {id} = params;
+        if(!userId) {
+            return NextResponse.json({
+                message:"Not Authorized"
+            }, {
+                status:401,
+            })
+        }
+        const { id } = await context.params;
         const vehicleId = id;
 
         if(!vehicleId) {
