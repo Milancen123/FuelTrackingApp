@@ -18,7 +18,7 @@ export interface IFuelLogUpdate{
     fullTank:boolean,
     date:Date,
     previousOdometer:number,
-    previousDate:date,
+    previousDate:Date,
 }
 
 const page = async ({ params }: LogPageProps) => {

@@ -85,7 +85,7 @@ export const compareLifetimeConsumption = (fuelData: FuelEntryType[], firstOdome
 
     const avgPrev = totalAverageConsumption(lifetimeUntilPrev, firstOdometer);
 
-    const avgCurr = totalAverageConsumption(lifetimeUntilCurr, );
+    const avgCurr = totalAverageConsumption(lifetimeUntilCurr, firstOdometer);
 
     if(!avgCurr || !avgPrev) return 0;
 
