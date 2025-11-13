@@ -77,6 +77,14 @@ export async function POST(request: Request) {
                 fullTank:fullTank,
             });
 
+            // export interface FuelEntryType {
+            //     fuel_filled: number;        // Liters filled
+            //     date: Date;                 // Date of refueling
+            //     total_price: number;        // Total price in chosen currency
+            //     odometer:number;
+            //     average_consumption?: number; // L/100km for this fill-up
+            //     fullTank:boolean;
+            //     }
             //odradi kalkulaciju svih ostalih parametara
             const average_consumption = totalAverageConsumption(formattedData ?? [], firstOdometerValue);
             const compare_for_last_month_consumption = compareLifetimeConsumption(formattedData ?? [], firstOdometerValue);

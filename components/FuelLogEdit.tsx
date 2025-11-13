@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { IFuelLogUpdate } from '@/app/(root)/fuel/[id]/page'
+import { toast } from 'sonner'
+import { redirect } from 'next/navigation'
 
 
 export const getFuelLogFormSchema = (previousOdometer: number, previousDate:Date) =>
@@ -26,6 +28,7 @@ export const getFuelLogFormSchema = (previousOdometer: number, previousDate:Date
         message: `Odometer must be greater than previous reading (${previousOdometer})`,
       }),
     fuelAmount: z.coerce.number(),
+    fullTank:z.boolean(),
     price: z.coerce.number(),
     date: z
       .string()
@@ -44,23 +47,51 @@ export const getFuelLogFormSchema = (previousOdometer: number, previousDate:Date
 type FuelLogFormValues = z.infer<ReturnType<typeof getFuelLogFormSchema>>;
 
 
-const FuelLogEdit = ({ id, odometer, fuelAmount, price, fullTank, date, previousOdometer, previousDate }: IFuelLogUpdate) => {
+const FuelLogEdit = ({ id, vehicleId, odometer, fuelAmount, price, fullTank, date, previousOdometer, previousDate }: IFuelLogUpdate) => {
+  const [updating, setUpdating] = useState(false);
   const formSchema = getFuelLogFormSchema(previousOdometer, previousDate);
   const form = useForm<FuelLogFormValues>({
     resolver: zodResolver(formSchema) as never,
     defaultValues:{
       odometer:odometer,
       fuelAmount:fuelAmount,
+      fullTank:fullTank,
       price:price,
       date:new Date(date).toISOString().split("T")[0],
     }
   })
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try{
+      setUpdating(true);
+      const response = await fetch(`http://localhost:3000/api/updateFuelLog/${id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          vehicleId,
+          odometer: values.odometer,
+          fuelAmount: values.fuelAmount,
+          fullTank:values.fullTank,
+          totalPrice: values.price,
+          date: values.date,
+        }),
+      });
+
+      console.log(response);
+
+    }catch(err){
+      console.error(err);
+      setUpdating(false);
+      toast.error("Couldn't update your record, please try again");
+    }finally{
+      toast.success("Your record has been updated successfully");
+      redirect("/log");
+      setUpdating(false);
+    }
+
   }
 
 
@@ -103,6 +134,25 @@ const FuelLogEdit = ({ id, odometer, fuelAmount, price, fullTank, date, previous
         />
         <FormField
           control={form.control}
+          name="fullTank"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Tank</FormLabel>
+              <FormControl>
+                <Input type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  className="w-5 h-5" />
+              </FormControl>
+              <FormDescription>
+                Please check if you topped the tank: {field.value?<span className='text-green-400 font-semibold '>You topped the tank</span>:<span className='text-red-400 font-semibold'>It was a partial fill up</span>}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="price"
           render={({ field }) => (
             <FormItem>
@@ -133,7 +183,7 @@ const FuelLogEdit = ({ id, odometer, fuelAmount, price, fullTank, date, previous
             </FormItem>
           )}
         />
-        <Button type="submit" className='cursor-pointer'>Update Record</Button>
+        <Button type="submit" className='cursor-pointer' disabled={updating}>{updating?"Updating...":"Update Record"}</Button>
       </form>
     </Form>
   )

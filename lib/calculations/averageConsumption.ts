@@ -27,7 +27,7 @@ export const averageConsumptionBetweenTwoFillUps = (fuel_filled: number, current
 
 
 
-export const totalAverageConsumption = (fuelData: FuelEntryType[], firstOdometer:number): number => {
+export const totalAverageConsumption = (fuelData: FuelEntryType[], firstOdometer?:number): number => {
 
     if (fuelData.length <= 1) return 0;
 
@@ -46,7 +46,7 @@ export const totalAverageConsumption = (fuelData: FuelEntryType[], firstOdometer
     return totalAverage;
 };
 
-export const compareLifetimeConsumption = (fuelData: FuelEntryType[], firstOdometer:number): number => {
+export const compareLifetimeConsumption = (fuelData: FuelEntryType[], firstOdometer?:number): number => {
     if (fuelData.length < 2) return 0;
 
     const now = new Date();

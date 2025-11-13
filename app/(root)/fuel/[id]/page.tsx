@@ -12,6 +12,7 @@ interface LogPageProps {
 
 export interface IFuelLogUpdate{
     id:string,
+    vehicleId:string,
     odometer:number,
     fuelAmount:number,
     price:number,
@@ -47,6 +48,7 @@ const page = async ({ params }: LogPageProps) => {
         
     const formattedFuelLog:IFuelLogUpdate = {
         id:(current._id).toString(),
+        vehicleId:(current.vehicleId).toString(),
         odometer:current.odometer,
         fuelAmount:current.fuelAmount,
         price:current.price,
@@ -56,21 +58,10 @@ const page = async ({ params }: LogPageProps) => {
         previousDate,
     };
 
-    // send the data as props to the FuelLogEdit component
-    /*
-    
-        id:
-        odoemeter:
-        fuelAmount
-        price
-        fullTank
-        data
-    
-    */
     return (
         <div className=' flex flex-col justify-center text-md items-center md:h-[100%] h-[80%] bg-white gap-5 md:mb-[5%] mb-[15%] mt-[5%] overflow-auto'>
             <h1 className='md:text-xl text-md font-bold'>Update your record</h1>
-            <FuelLogEdit id={(formattedFuelLog.id)} odometer={formattedFuelLog.odometer} fuelAmount={formattedFuelLog.fuelAmount} price={formattedFuelLog.price} fullTank={formattedFuelLog.fullTank} date={formattedFuelLog.date} previousOdometer={formattedFuelLog.previousOdometer} previousDate={new Date(formattedFuelLog.previousDate)}/>
+            <FuelLogEdit id={(formattedFuelLog.id)} vehicleId={formattedFuelLog.vehicleId} odometer={formattedFuelLog.odometer} fuelAmount={formattedFuelLog.fuelAmount} price={formattedFuelLog.price} fullTank={formattedFuelLog.fullTank} date={formattedFuelLog.date} previousOdometer={formattedFuelLog.previousOdometer} previousDate={new Date(formattedFuelLog.previousDate)}/>
         </div>
     )
 }

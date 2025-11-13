@@ -185,8 +185,7 @@ const Page = async () => {
       <div className='pt-5'>
         <p className='text-lg font-bold'>Fuel Log</p>
       </div>
-      <h1>Update your record</h1>
-      <LogPage allVehicles={vehicles} fuelLogs={fuelLogs} vehicleStats={vehicleStats}/>
+      <LogPage allVehicles={vehicles} fuelLogs={fuelLogs || []} vehicleStats={vehicleStats}/>
     </div>
   )
 }

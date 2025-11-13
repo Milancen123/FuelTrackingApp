@@ -20,7 +20,8 @@ import CarListLogPage from '@/components/CarListLogPage';
 import { LogPageVehicle } from '@/app/(root)/log/page';
 import NoFuel from './NoFuel';
 import { Button } from './ui/button';
-import { IgetVehicleStats } from '@/app/database';
+import { getVehicleStats, IgetVehicleStats } from '@/app/database';
+import mongoose from "mongoose";
 
 
 interface LogPageProps {
@@ -41,7 +42,13 @@ const LogPage = ({ allVehicles, fuelLogs, vehicleStats}: LogPageProps) => {
     const [vehicles, setVehicles] = useState<LogPageVehicle[]>(allVehicles);
     const [fuelData, setFuelData] = useState(fuelLogs);
     const [loading, setLoading] = useState<boolean>(false);
+    const [loadingStats, setLoadingStats] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
+    //totalDistance={vehicleStats.totalDistance} totalFuel={vehicleStats.totalFuel} totalCost={vehicleStats.totalCost}
+    const [totalDistance, setTotalDistance] = useState<number>(vehicleStats.totalDistance);
+    const [totalFuel, setTotalFuel] = useState<number>(vehicleStats.totalFuel);
+    const [totalCost, setTotalCost] = useState<number>(vehicleStats.totalCost);
+
 
     async function fetchFuelLogs(newPage: number) {
         try {
@@ -69,11 +76,26 @@ const LogPage = ({ allVehicles, fuelLogs, vehicleStats}: LogPageProps) => {
     useEffect(() => {
         
         (async () => {
-            setLoading(true);
-            await fetchFuelLogs(page);
+            try{
+                setLoadingStats(true)
+                await fetchFuelLogs(page);
+                const response = await fetch(`/api/vehicleStats/${activeVehicle.id}`);
+                const data = await response.json();
+
+                console.log(data);
+                // const vehicleStats1:IgetVehicleStats = await getVehicleStats(new mongoose.Types.ObjectId(activeVehicle.id));
+                setTotalDistance(data.response.totalDistance);
+                setTotalCost(data.response.totalCost);
+                setTotalFuel(data.response.totalFuel);
+            }catch(err){
+                console.error(err);
+            }finally{
+                setLoadingStats(false);
+            }
+            
         })();
         
-        setFuelData(fuelLogs);
+        setFuelData([]);
     }, [activeVehicle]);
 
 
@@ -81,7 +103,7 @@ const LogPage = ({ allVehicles, fuelLogs, vehicleStats}: LogPageProps) => {
         <div className='flex flex-col gap-4'>
             <CarListLogPage vehicles={vehicles} setActiveVehicle={setActiveVehicle} activeVehicle={activeVehicle} />
 
-            <VehicleStats totalDistance={vehicleStats.totalDistance} totalFuel={vehicleStats.totalFuel} totalCost={vehicleStats.totalCost} />
+            <VehicleStats totalDistance={totalDistance} totalFuel={totalFuel} totalCost={totalCost} loading={loadingStats}/>
 
             <div className='flex flex-col gap-2 justify-center items-center'>
                 {loading ? (

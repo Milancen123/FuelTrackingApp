@@ -257,7 +257,7 @@ export const getVehicleStats = async (vehicleId:Types.ObjectId):Promise<IgetVehi
 
 
         
-        const totalDistance = fuelData[fuelData.length - 1].odometer - firstOdometer;
+        const totalDistance = fuelData[fuelData.length - 1].odometer - fuelData[0].odometer;
 
         let totalFuel = 0;
         let totalCost = 0;
@@ -289,6 +289,40 @@ export const getVehicleStats = async (vehicleId:Types.ObjectId):Promise<IgetVehi
     }
 }
 
+export interface IFuelLog {
+  vehicleId:Types.ObjectId,
+  odometer: number;
+  average_consumption?:number,
+  fuelAmount: number;
+  price: number;
+  date: Date;
+  fullTank:boolean;
+}
+
+export const updateFuelLogById = async (fuelLogId:Types.ObjectId, odometer?:number, fuelAmount?:number, totalPrice?:number, date?:Date, fullTank?:boolean)=>{
+    try{
+        if(!odometer || !fuelAmount || !totalPrice || !date){
+            return {
+                success:true,
+            }
+        }
+
+        const updateQuery = {
+            odometer,
+            fuelAmount,
+            price:totalPrice,
+            date,
+            fullTank,
+        };
+        console.log(updateQuery);
+        const response = await FuelLog.findByIdAndUpdate(fuelLogId, updateQuery);
+
+        return response;
+    }catch(err){
+        console.error(err);
+        handleError(err, "api");
+    }
+}
 
 export const getFuelLogById = async (fuelLogId:Types.ObjectId)=>{
     try{
