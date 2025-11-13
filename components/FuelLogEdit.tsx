@@ -15,47 +15,71 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { IFuelLogUpdate } from '@/app/(root)/fuel/[id]/page'
 
 
-
-const formSchema = z.object({
-    username: z.string().min(2).max(50),
-})
-
-
-
-const FuelLogEdit = () => {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            username: "",
+export const getFuelLogFormSchema = (previousOdometer: number, previousDate:Date) =>
+    z.object({
+    odometer: z.coerce
+      .number()
+      .refine((val) => val > previousOdometer, {
+        message: `Odometer must be greater than previous reading (${previousOdometer})`,
+      }),
+    fuelAmount: z.coerce.number(),
+    price: z.coerce.number(),
+    date: z
+      .string()
+      .min(1, "Date is required")
+      .refine(
+        (val) => {
+          const currentDate = new Date(val);
+          return currentDate > previousDate;
         },
-    })
+        {
+          message: `Date must be after the previous fill-up date (${previousDate.toLocaleDateString()})`,
+        }
+      )
+  });
 
-    // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
+type FuelLogFormValues = z.infer<ReturnType<typeof getFuelLogFormSchema>>;
+
+
+const FuelLogEdit = ({ id, odometer, fuelAmount, price, fullTank, date, previousOdometer, previousDate }: IFuelLogUpdate) => {
+  const formSchema = getFuelLogFormSchema(previousOdometer, previousDate);
+  const form = useForm<FuelLogFormValues>({
+    resolver: zodResolver(formSchema) as never,
+    defaultValues:{
+      odometer:odometer,
+      fuelAmount:fuelAmount,
+      price:price,
+      date:new Date(date).toISOString().split("T")[0],
     }
+  })
+
+  // 2. Define a submit handler.
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values)
+  }
 
 
 
 
-    return (
+  return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="username"
+          name="odometer"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Odometer</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder={`${odometer}`} {...field}  />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Last Odometer reading: {previousOdometer}km
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -63,15 +87,15 @@ const FuelLogEdit = () => {
         />
         <FormField
           control={form.control}
-          name="username"
+          name="fuelAmount"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Fuel Amount</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder={`${fuelAmount}`} {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Please insert the amount of fuel in liters
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -79,15 +103,15 @@ const FuelLogEdit = () => {
         />
         <FormField
           control={form.control}
-          name="username"
+          name="price"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Total price</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder={`${price}`} {...field}  />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Please insert the total amount you paid
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -95,21 +119,21 @@ const FuelLogEdit = () => {
         />
         <FormField
           control={form.control}
-          name="username"
+          name="date"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Date</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder={`${date}`} {...field} type="date" />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                Please insert the date of the fill up that is after: {previousDate.toISOString().split("T")[0]}
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className='cursor-pointer'>Update Record</Button>
       </form>
     </Form>
   )

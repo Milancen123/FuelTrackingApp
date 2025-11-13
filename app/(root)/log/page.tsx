@@ -143,10 +143,6 @@ export interface LogPageVehicle{
 }
 
 const Page = async () => {
-  // fetch all vehicles
-  // set the page to page=1
-  //fetch the fuellog for that vehicle vehicle[0] first if the query param doesnt suggest otherwise and for specified page(page is specified in the client component)
-  //pass the vehicles and fueldata to the client componenet as props
   const auth = await getAppUser();
 
   if(!auth || !auth.clerkId || !auth.mongoId) redirect("/");
@@ -189,6 +185,7 @@ const Page = async () => {
       <div className='pt-5'>
         <p className='text-lg font-bold'>Fuel Log</p>
       </div>
+      <h1>Update your record</h1>
       <LogPage allVehicles={vehicles} fuelLogs={fuelLogs} vehicleStats={vehicleStats}/>
     </div>
   )

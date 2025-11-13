@@ -288,3 +288,30 @@ export const getVehicleStats = async (vehicleId:Types.ObjectId):Promise<IgetVehi
 
     }
 }
+
+
+export const getFuelLogById = async (fuelLogId:Types.ObjectId)=>{
+    try{
+        // Find the current fuel log
+        const currentLog = await FuelLog.findById(fuelLogId);
+        if (!currentLog) return null;
+
+        // Find the previous one (smaller _id)
+        const previousLog = await FuelLog.findOne({
+            _id: { $lt: fuelLogId },
+            vehicleId: currentLog.vehicleId, // optional: only if you want within same vehicle
+        })
+            .sort({ _id: -1 }) // get the *most recent* before current
+            .lean();
+
+        if (!previousLog) return {current:currentLog};
+
+        return {
+            current: currentLog,
+            previous: previousLog,
+        };
+    }catch(err){
+        console.error(err);
+        handleError(err, "api");
+    }
+}

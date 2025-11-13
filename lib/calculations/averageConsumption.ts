@@ -36,7 +36,7 @@ export const totalAverageConsumption = (fuelData: FuelEntryType[], firstOdometer
     //total_distance = last_odometer - first_odometer
     //sumFuel/total_distance L/100km
     let totalFuel = 0;
-    const totalDistance = fuelData[fuelData.length - 1].odometer - firstOdometer;
+    const totalDistance = fuelData[fuelData.length - 1].odometer - fuelData[0].odometer;
     for(let i = 1; i < fuelData.length; i++) {
         totalFuel += fuelData[i].fuel_filled;
     }
@@ -85,7 +85,7 @@ export const compareLifetimeConsumption = (fuelData: FuelEntryType[], firstOdome
 
     const avgPrev = totalAverageConsumption(lifetimeUntilPrev, firstOdometer);
 
-    const avgCurr = totalAverageConsumption(lifetimeUntilCurr, firstOdometer);
+    const avgCurr = totalAverageConsumption(lifetimeUntilCurr, );
 
     if(!avgCurr || !avgPrev) return 0;
 

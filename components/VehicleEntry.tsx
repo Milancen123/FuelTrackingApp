@@ -85,7 +85,7 @@ const VehicleEntry = ({ isOpen, setIsOpen, vehicles, setVehicles }: VehicleEntry
         model: "",
         year: 0,
         fuelType: "",
-        odometer: "",
+        odometer: 0,
     });
 
     const handleChange = (field: string, value: string) => {
@@ -186,7 +186,7 @@ const VehicleEntry = ({ isOpen, setIsOpen, vehicles, setVehicles }: VehicleEntry
                 <div className='flex justify-between items-center border-b-1 pb-3'>
                     <div>
                         <h1 className='font-bold text-xl'>Add New Vehicle</h1>
-                        <p className='text-gray-500'>Step {step} of 6</p>
+                        <p className='text-gray-500'>Step {step} of 5</p>
                     </div>
                     <Tooltip>
                         <TooltipTrigger>
@@ -203,7 +203,7 @@ const VehicleEntry = ({ isOpen, setIsOpen, vehicles, setVehicles }: VehicleEntry
 
                 {/* steps */}
                 <div className='flex gap-3'>
-                    {[1, 2, 3, 4, 5, 6].map((stepNumber) => {
+                    {[1, 2, 3, 4, 5].map((stepNumber) => {
                         return <div key={stepNumber} className={`${stepNumber <= step ? 'bg-[#171717]' : 'bg-[#F5F5F5]'} w-full h-2 rounded-full`}>
                         </div>
                     })}
@@ -272,7 +272,7 @@ const VehicleEntry = ({ isOpen, setIsOpen, vehicles, setVehicles }: VehicleEntry
                     </div>
                 )}
 
-                {step === 5 && (
+                {/* {step === 5 && (
                     <div className='flex flex-col items-center gap-4'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
                             <Gauge size={40} />
@@ -287,11 +287,11 @@ const VehicleEntry = ({ isOpen, setIsOpen, vehicles, setVehicles }: VehicleEntry
                             {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.odometer}</p>)}
                         </div>
                     </div>
-                )}
+                )} */}
 
 
 
-                {step === 6 && (
+                {step === 5 && (
                     /*summary page*/
                     <div className='flex flex-col items-center gap-4'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
@@ -318,18 +318,14 @@ const VehicleEntry = ({ isOpen, setIsOpen, vehicles, setVehicles }: VehicleEntry
                                 <h1 className='text-gray-500 text-sm'>Fuel</h1>
                                 <h1 className='text-black font-semibold text-sm'>{formData.fuelType}</h1>
                             </div>
-                            <div className='flex justify-between pl-4 pr-4 '>
-                                <h1 className='text-gray-500 text-sm'>Odometer</h1>
-                                <h1 className='text-black font-semibold text-sm'>{formData.odometer}</h1>
-                            </div>
                         </div>
                     </div>
                 )}
 
                 <div className='w-full  justify-between flex gap-2'>
                     <Button className='w-[48%] cursor-pointer bg-white text-black border-1 border-gray-400 hover:text-white' disabled={step === 1 || submitting} onClick={handleBackStep}>Back</Button>
-                    {step < 6 && <Button className='w-[48%] cursor-pointer' onClick={() => handleNextStep()} >Next</Button>}
-                    {step === 6 && <Button className={`w-[48%] cursor-pointer ${submitting && 'bg-gray-800'}`} disabled={submitting} onClick={() => handleSubmit()}>{submitting ? <><LoaderCircle className='animate-spin' /> Saving</> : <><Check /> Confirm</>}</Button>}
+                    {step < 5 && <Button className='w-[48%] cursor-pointer' onClick={() => handleNextStep()} >Next</Button>}
+                    {step === 5 && <Button className={`w-[48%] cursor-pointer ${submitting && 'bg-gray-800'}`} disabled={submitting} onClick={() => handleSubmit()}>{submitting ? <><LoaderCircle className='animate-spin' /> Saving</> : <><Check /> Confirm</>}</Button>}
                 </div>
             </div>
         </div>

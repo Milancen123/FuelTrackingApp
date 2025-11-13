@@ -1,17 +1,76 @@
 
+import { getFuelLogById } from '@/app/database'
 import FuelLogEdit from '@/components/FuelLogEdit'
 import React from 'react'
+import mongoose from "mongoose";
+import { redirect } from "next/navigation";
 
 
+interface LogPageProps {
+  params: Promise<{ id: string }>;
+}
 
-const page = async () => {
-    //  fetch the data associated with this record
+export interface IFuelLogUpdate{
+    id:string,
+    odometer:number,
+    fuelAmount:number,
+    price:number,
+    fullTank:boolean,
+    date:Date,
+    previousOdometer:number,
+    previousDate:date,
+}
+
+const page = async ({ params }: LogPageProps) => {
+
+    const { id } = await params;
+    const data = await getFuelLogById(new mongoose.Types.ObjectId(id));
+
+    if(!data){
+        redirect("/log");
+    }
+    const current = data.current;
+    const previous = data.previous;
     
+    console.log("OVO JE DATA KOJI SMO DOBILI ZA TAJ FUEL LOG")
+    console.log(current);
+    console.log(previous);
+
+    const previousDate = Array.isArray(previous)
+        ? previous[0]?.date ?? new Date("2000-01-01")
+        : previous?.date ?? new Date("2000-01-01");
+
+    const previousOdometer = Array.isArray(previous)
+        ? previous[0]?.odometer ?? 0
+        : previous?.odometer ?? 0;
+
+        
+    const formattedFuelLog:IFuelLogUpdate = {
+        id:(current._id).toString(),
+        odometer:current.odometer,
+        fuelAmount:current.fuelAmount,
+        price:current.price,
+        fullTank:current.fullTank,
+        date:current.date,
+        previousOdometer,
+        previousDate,
+    };
+
     // send the data as props to the FuelLogEdit component
-    //
+    /*
+    
+        id:
+        odoemeter:
+        fuelAmount
+        price
+        fullTank
+        data
+    
+    */
     return (
-        <div>
-            <FuelLogEdit/>
+        <div className=' flex flex-col justify-center text-md items-center md:h-[100%] h-[80%] bg-white gap-5 md:mb-[5%] mb-[15%] mt-[5%] overflow-auto'>
+            <h1 className='md:text-xl text-md font-bold'>Update your record</h1>
+            <FuelLogEdit id={(formattedFuelLog.id)} odometer={formattedFuelLog.odometer} fuelAmount={formattedFuelLog.fuelAmount} price={formattedFuelLog.price} fullTank={formattedFuelLog.fullTank} date={formattedFuelLog.date} previousOdometer={formattedFuelLog.previousOdometer} previousDate={new Date(formattedFuelLog.previousDate)}/>
         </div>
     )
 }
