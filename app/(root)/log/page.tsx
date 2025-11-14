@@ -84,7 +84,7 @@ const Page = async () => {
       <div className='pt-5'>
         <p className='text-lg font-bold'>Fuel Log</p>
       </div>
-      <div className='flex flex-col justify-center mb-[10%] md:mb-[5%]'>
+     
         {vehicles.length > 0 ? <LogPage allVehicles={vehicles} fuelLogs={fuelLogs || []} vehicleStats={vehicleStats}/> : <div className='flex flex-col items-center justify-center mt-[30%] md:mt-[10%]'>
           <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full'>
             <CircleOff />
@@ -98,7 +98,7 @@ const Page = async () => {
             
           </div>
         </div>}
-      </div>
+      
     </div>
   )
 }
