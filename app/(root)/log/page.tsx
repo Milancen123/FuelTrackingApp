@@ -8,8 +8,11 @@ import { CarType } from '@/types/car';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import mongoose from "mongoose";
-
+import { CircleOff } from 'lucide-react';
 import React from 'react'
+import NoFuel from '@/components/NoFuel';
+import { DropletOff } from 'lucide-react';
+import Link from 'next/link';
 // import {
 //   Pagination,
 //   PaginationContent,
@@ -30,112 +33,6 @@ import React from 'react'
 
 
 
-const allVehicles: CarType[] = [
-  {
-    name: "Opel Vectra B",
-    last_fill_up: 45.6,
-    odometer: 199899,
-    active: true,
-    average_consumption: 7.8,
-    compare_for_last_month_consumption: -3,
-    monthly_cost: 245.8,
-    compare_for_last_month_cost: 12,
-    fuelData: [
-      {
-        fuel_filled: 45.2,
-        date: new Date("2025-01-15"),
-        total_price: 4320,
-        odometer: 123123,
-        average_consumption: 14.5,
-        fullTank:true,
-      },
-      {
-        fuel_filled: 38.7,
-        date: new Date("2025-01-28"),
-        total_price: 3785,
-        odometer: 123123,
-        average_consumption: 13.8,
-        fullTank:true,
-      },
-      {
-        fuel_filled: 52.1,
-        date: new Date("2025-02-10"),
-        total_price: 5170,
-        odometer: 123123,
-        average_consumption: 15.2,
-        fullTank:true,
-      },
-      {
-        fuel_filled: 41.6,
-        date: new Date("2025-02-24"),
-        total_price: 4125,
-        odometer: 123123,
-        average_consumption: 14.1,
-        fullTank:true,
-      },
-      {
-        fuel_filled: 47.3,
-        date: new Date("2025-03-08"),
-        total_price: 4680,
-        odometer: 123123,
-        average_consumption: 14.8,
-        fullTank:true,
-      },
-    ]
-  },
-  {
-    name: "Citroen C4",
-    last_fill_up: 52.8,
-    odometer: 78234,
-    active: false,
-    average_consumption: 6.0,
-    compare_for_last_month_consumption: -0.3,
-    monthly_cost: 450,
-    compare_for_last_month_cost: 180,
-    fuelData: [
-      {
-        fuel_filled: 45.2,
-        date: new Date("2025-01-15"),
-        total_price: 4320,
-        odometer: 78900,
-        average_consumption: 14.5,
-        fullTank:true,
-      },
-      {
-        fuel_filled: 38.7,
-        date: new Date("2025-01-28"),
-        total_price: 3785,
-        odometer: 123123,
-        average_consumption: 13.8,
-        fullTank:true,
-      },
-      {
-        fuel_filled: 52.1,
-        date: new Date("2025-02-10"),
-        total_price: 5170,
-        odometer: 123123,
-        average_consumption: 15.2,
-        fullTank:true,
-      },
-      {
-        fuel_filled: 41.6,
-        date: new Date("2025-02-24"),
-        total_price: 4125,
-        odometer: 123123,
-        average_consumption: 14.1,
-        fullTank:true,
-      },
-      {
-        fuel_filled: 47.3,
-        date: new Date("2025-03-08"),
-        total_price: 4680,
-        odometer: 123123,
-        average_consumption: 14.8,
-        fullTank:true,
-      },
-    ]
-  }
-];
 
 export interface LogPageVehicle{
   id:string,
@@ -167,11 +64,21 @@ const Page = async () => {
     });
 
   //fetch server side the fuel log for the first vehicle in the list
-  const fuelLogs:FuelLogCardProps[] = await getFuelLogsByPage(1, vehicles[0].id);
   //get the vehicles data totalDistance, totalFuel, totalCost
-  
+  let vehicleStats:IgetVehicleStats = {
+      totalDistance:0,
+      totalFuel:0,
+      totalCost:0,
+  }
 
-  const vehicleStats:IgetVehicleStats = await getVehicleStats(new mongoose.Types.ObjectId(vehicles[0].id));
+  let fuelLogs:FuelLogCardProps[] = [];
+  if(vehicles.length > 0){
+      vehicleStats = await getVehicleStats(new mongoose.Types.ObjectId(vehicles[0].id));
+      fuelLogs = await getFuelLogsByPage(1, vehicles[0].id);
+  }
+
+
+
   
 
 
@@ -181,11 +88,25 @@ const Page = async () => {
 
 
   return (
-    <div className='flex flex-col gap-4 md:mb-[5%] mb-[20%]'>
+    <div className='flex flex-col   h-dvh gap-4 md:mb-[5%] mb-[20%]'>
       <div className='pt-5'>
         <p className='text-lg font-bold'>Fuel Log</p>
       </div>
-      <LogPage allVehicles={vehicles} fuelLogs={fuelLogs || []} vehicleStats={vehicleStats}/>
+      <div className='flex flex-col justify-center '>
+        {vehicles.length > 0 ? <LogPage allVehicles={vehicles} fuelLogs={fuelLogs || []} vehicleStats={vehicleStats}/> : <div className='flex flex-col items-center justify-center mt-[30%] md:mt-[10%]'>
+          <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full'>
+            <CircleOff />
+          </div>
+          <div className='flex flex-col justify-center items-center'>
+            <h1 className='text-2xl font-bold'>Please create new vehicle</h1>
+            <Link
+              href="/">
+                <p className='text-gray-500 underline hover:no-underline hover:text-blue-400'>Go to the Home page and create new vehicle</p>
+            </Link>
+            
+          </div>
+        </div>}
+      </div>
     </div>
   )
 }

@@ -8,6 +8,7 @@ import { CarType } from "@/types/car";
 import { model, models, Schema, Types } from "mongoose";
 
 
+
 export const getVehicleByID = async (vehicleId: Types.ObjectId, fuelLogs:boolean=true) => {
     try {
         await dbConnect();
@@ -249,7 +250,7 @@ export const getVehicleStats = async (vehicleId:Types.ObjectId):Promise<IgetVehi
         const firstOdometer = Number(overallVehicleData[0].odometer);
 
         const fuelData = await getFuelLogsForVehicleID(vehicleId, true);
-        if(!fuelData) return {
+        if(!fuelData || fuelData.length <= 0) return {
             totalDistance:0,
             totalFuel:0,
             totalCost:0,
@@ -289,15 +290,6 @@ export const getVehicleStats = async (vehicleId:Types.ObjectId):Promise<IgetVehi
     }
 }
 
-export interface IFuelLog {
-  vehicleId:Types.ObjectId,
-  odometer: number;
-  average_consumption?:number,
-  fuelAmount: number;
-  price: number;
-  date: Date;
-  fullTank:boolean;
-}
 
 export const updateFuelLogById = async (fuelLogId:Types.ObjectId, odometer?:number, fuelAmount?:number, totalPrice?:number, date?:Date, fullTank?:boolean)=>{
     try{
