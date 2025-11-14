@@ -63,8 +63,10 @@ const Page = async () => {
       
     });
 
-  //fetch server side the fuel log for the first vehicle in the list
-  //get the vehicles data totalDistance, totalFuel, totalCost
+
+
+
+
   let vehicleStats:IgetVehicleStats = {
       totalDistance:0,
       totalFuel:0,
@@ -77,22 +79,12 @@ const Page = async () => {
       fuelLogs = await getFuelLogsByPage(1, vehicles[0].id);
   }
 
-
-
-  
-
-
-
-
-
-
-
   return (
     <div className='flex flex-col   h-dvh gap-4 md:mb-[5%] mb-[20%]'>
       <div className='pt-5'>
         <p className='text-lg font-bold'>Fuel Log</p>
       </div>
-      <div className='flex flex-col justify-center '>
+      <div className='flex flex-col justify-center mb-[10%] md:mb-[5%]'>
         {vehicles.length > 0 ? <LogPage allVehicles={vehicles} fuelLogs={fuelLogs || []} vehicleStats={vehicleStats}/> : <div className='flex flex-col items-center justify-center mt-[30%] md:mt-[10%]'>
           <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full'>
             <CircleOff />
