@@ -319,7 +319,10 @@ export const updateFuelLogById = async (fuelLogId:Types.ObjectId, odometer?:numb
 export const getFuelLogById = async (fuelLogId:Types.ObjectId)=>{
     try{
         // Find the current fuel log
+        await dbConnect();
         const currentLog = await FuelLog.findById(fuelLogId);
+        console.log("SAD SMO OVDE");
+        console.log("TRENUTNI CURRENTLOG: ", currentLog);
         if (!currentLog) return null;
 
         // Find the previous one (smaller _id)

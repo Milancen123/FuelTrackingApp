@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 
 
 interface LogPageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export interface IFuelLogUpdate{
@@ -24,7 +24,9 @@ export interface IFuelLogUpdate{
 
 const page = async ({ params }: LogPageProps) => {
 
-    const { id } = await params;
+    const { id } = params;
+    console.log("\n\n\n\n\n\n\n***********************************************SERVER***********************************************\n\n\n\n\n\n\n");
+    console.log("OVAJ ID SMO DOBILI ZA FUELLOG: ", id);
     const data = await getFuelLogById(new mongoose.Types.ObjectId(id));
 
     if(!data){
