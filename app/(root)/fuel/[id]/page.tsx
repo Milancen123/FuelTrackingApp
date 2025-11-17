@@ -22,6 +22,7 @@ export interface IFuelLogUpdate{
     previousDate:Date,
 }
 
+
 const page = async ({ params }: LogPageProps) => {
 
     const { id } = params;
