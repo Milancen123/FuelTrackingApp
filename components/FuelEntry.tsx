@@ -45,6 +45,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
     const [activeVehicleForFuel, setActiveVehicleForFuel] = useState<CarType | undefined>(vehicles && vehicles.find((car) => car.name === activeVehicle));
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         vehicle: activeVehicleForFuel,
@@ -168,6 +169,28 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
     }
 
 
+    async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setLoading(true);
+
+        const form = new FormData();
+        form.append("image", file); // no error now
+
+        const res = await fetch("/api/extractOdometer", {
+            method: "POST",
+            body: form,
+        });
+
+        const data = await res.json();
+        setLoading(false);
+
+        handleChange("odometer", data.raw)
+        console.log("OVO VRACA GOOGLE AI API: ", data);
+    }
+
+
     useEffect(() => {
         handleChange("date", date.toString());
     }, [date]);
@@ -215,7 +238,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                 </div>
 
                 {step === 1 && (
-                    <div className='flex flex-col items-center gap-4'>
+                    <div className='flex flex-col items-center gap-2'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
                             <Car size={40} />
                         </div>
@@ -240,7 +263,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                     </div>
                 )}
                 {step === 2 && (
-                    <div className='flex flex-col items-center gap-4'>
+                    <div className='flex flex-col items-center gap-2'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
                             <Gauge size={40} />
                         </div>
@@ -251,13 +274,14 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                         <div className='w-[80%] flex flex-col gap-2'>
                             <h1 className='font-semibold'>Current Odometer (km)</h1>
                             <Input className={`p-6 text-center  ${errors.odometer ? 'text-red-500 font-bold' : 'text-black'}`} placeholder='45892' value={formData.odometer !== '0' ? formData.odometer : ''} onChange={(e) => handleChange("odometer", e.target.value)} />
+                            {loading ? <div className='flex animate-pulse items-center gap-2'><LoaderCircle className='animate-spin' size={20}/><p>AI is extracting data...</p></div>:<Input type='file' onChange={handleUpload}/>}
                             {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.odometer}</p>)}
                             <p className='text-xs text-gray-500 text-center'>Last reading: {activeVehicleForFuel && activeVehicleForFuel.odometer}km</p>
                         </div>
                     </div>
                 )}
                 {step === 3 && (
-                    <div className='flex flex-col items-center gap-4'>
+                    <div className='flex flex-col items-center gap-2'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
                             <Fuel size={40} />
                         </div>
@@ -277,7 +301,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                     </div>
                 )}
                 {step === 4 && (
-                    <div className='flex flex-col items-center gap-4'>
+                    <div className='flex flex-col items-center gap-2'>
                         <div className='p-4 text-[50px] flex justify-center items-center bg-gray-200 rounded-full' >
                             <DollarSign color="#517538" size={40} />
                         </div>
