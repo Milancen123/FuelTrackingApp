@@ -26,8 +26,6 @@ export interface IFuelLogUpdate{
 const page = async ({ params }: LogPageProps) => {
 
     const { id } = params;
-    console.log("\n\n\n\n\n\n\n***********************************************SERVER***********************************************\n\n\n\n\n\n\n");
-    console.log("OVAJ ID SMO DOBILI ZA FUELLOG: ", id);
     const data = await getFuelLogById(new mongoose.Types.ObjectId(id));
 
     if(!data){

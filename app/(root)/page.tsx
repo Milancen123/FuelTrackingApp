@@ -6,6 +6,7 @@ import { CarType } from '@/types/car';
 import getAppUser from '@/lib/auth/getAppUser';
 import { compareLifetimeConsumption, totalAverageConsumption } from '@/lib/calculations/averageConsumption';
 import { compareMonthlyFuelCost, totalSpentThisMonth } from '@/lib/calculations/averagePrice';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 
@@ -55,6 +56,7 @@ const Page = async () => {
     <div className='bg-white flex flex-col gap-5 md:mb-[5%] mb-[15%]'>
       <VehicleListAndFuelList vehiclesProp={formattedVehicles}/>
     </div>
+
   )
 }
 

@@ -13,6 +13,7 @@ import React from 'react'
 import NoFuel from '@/components/NoFuel';
 import { DropletOff } from 'lucide-react';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 // import {
 //   Pagination,
 //   PaginationContent,
@@ -44,7 +45,6 @@ const Page = async () => {
 
   if(!auth || !auth.clerkId || !auth.mongoId) redirect("/");
   console.log(auth);
-  // get the mongodb id from clerk id
   const vehicleResponse = await fetch(`${process.env.BASEURI}/api/vehicles?mongoID=${auth.mongoId}`, {
     cache:"no-store",
   });
@@ -79,6 +79,7 @@ const Page = async () => {
       fuelLogs = await getFuelLogsByPage(1, vehicles[0].id);
   }
 
+
   return (
     <div className='flex flex-col mb-[30%] md:mb-[5%]'>
       <div className='pt-5'>
@@ -101,6 +102,7 @@ const Page = async () => {
         </div>}
       
     </div>
+
   )
 }
 
