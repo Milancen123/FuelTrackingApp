@@ -12,6 +12,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Info } from 'lucide-react';
 
 import {
     Popover,
@@ -23,6 +24,19 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { Checkbox } from './ui/checkbox';
 import { Label } from './ui/label';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import InfoBox from './InfoBox';
+
+
 
 
 
@@ -170,6 +184,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
 
 
     async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        try{
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -185,9 +200,70 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
 
         const data = await res.json();
         setLoading(false);
+        if (data.error) {
+            if (data.error.status === 503) {
+                toast.error("AI Service is currently unavailable, please insert data manually")
+            }else{
+                toast.error("Something went wrong");
+            }
+            
+            return;
+        }
 
         handleChange("odometer", data.raw)
         console.log("OVO VRACA GOOGLE AI API: ", data);
+    }catch(err){
+        console.error(err);
+        toast.error("Something went wrong");
+    }
+    }
+
+    async function handleReceiptUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        try {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            setLoading(true);
+
+            const form = new FormData();
+            form.append("image", file); // no error now
+
+            const res = await fetch("/api/extractReceipt", {
+                method: "POST",
+                body: form,
+            });
+
+            const data = await res.json();
+            setLoading(false);
+            if (data.error) {
+                if (data.error.status === 503) {
+                    toast.error("AI Service is currently unavailable, please insert data manually")
+                } else {
+                    toast.error("Something went wrong");
+                }
+                return;
+            }
+            // 1. Remove code fences
+            const cleaned = data.raw.replace(/```json|```/g, '').trim();
+
+            // 2. Parse JSON
+            const parsed = JSON.parse(cleaned);
+
+            // 3. Extract fields from the first object
+            const { totalAmount, totalPrice, date, country } = parsed[0];
+
+            console.log("OVO VRACA GOOGLE AI API: ", data);
+            console.log(totalAmount, totalPrice, date, country);
+            handleChange("fuelFilled", totalAmount);
+            handleChange("totalPrice", totalPrice);
+            setDate(new Date(date));
+
+
+        }catch(err){
+            console.error(err);
+            console.log("DESILA SE GRESKA");
+        }
+
     }
 
 
@@ -274,7 +350,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                         <div className='w-[80%] flex flex-col gap-2'>
                             <h1 className='font-semibold'>Current Odometer (km)</h1>
                             <Input className={`p-6 text-center  ${errors.odometer ? 'text-red-500 font-bold' : 'text-black'}`} placeholder='45892' value={formData.odometer !== '0' ? formData.odometer : ''} onChange={(e) => handleChange("odometer", e.target.value)} />
-                            {loading ? <div className='flex animate-pulse items-center gap-2'><LoaderCircle className='animate-spin' size={20}/><p>AI is extracting data...</p></div>:<Input type='file' onChange={handleUpload}/>}
+                            {loading ? <div className='flex animate-pulse items-center gap-2'><LoaderCircle className='animate-spin' size={20}/><p>AI is extracting data...</p></div>:<div className='flex gap-2'><Input type='file' onChange={handleUpload}/> <InfoBox type={"odometer"}/></div>}
                             {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.odometer}</p>)}
                             <p className='text-xs text-gray-500 text-center'>Last reading: {activeVehicleForFuel && activeVehicleForFuel.odometer}km</p>
                         </div>
@@ -292,6 +368,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                         <div className='w-[80%] flex flex-col gap-2'>
                             <h1 className='font-semibold'>Liters</h1>
                             <Input className='p-6 text-center' required placeholder='45.2' value={formData.fuelFilled !== 0 ? formData.fuelFilled : ''} onChange={(e) => handleChange("fuelFilled", e.target.value)} />
+                            {loading ? <div className='flex animate-pulse items-center gap-2'><LoaderCircle className='animate-spin' size={20}/><p>AI is extracting data...</p></div>:<div className='flex gap-2'><Input type='file' onChange={handleReceiptUpload}/> <InfoBox type={"receipt"}/></div>}
                             {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.fuelFilled}</p>)}
                             <div className="flex items-center gap-3">
                                 <Label htmlFor="terms">Full Tank</Label>

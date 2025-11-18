@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
         return Response.json({ raw: text });
     } catch (e) {
-        console.error(e);
-        return Response.json({ error: e }, { status: 500 });
+        //@ts-expect-error it returens status
+        return Response.json({ error: e }, { status: e.status });
     }
 }
