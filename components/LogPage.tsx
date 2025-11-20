@@ -16,12 +16,12 @@ import { Car, LoaderCircle } from 'lucide-react';
 import FuelLogCard, { FuelLogCardProps } from '@/components/FuelLogCard';
 import dbConnect from '@/lib/mongoose';
 import VehicleStats from '@/components/VehicleStats';
-import CarListLogPage from '@/components/CarListLogPage';
 import { LogPageVehicle } from '@/app/(root)/log/page';
 import NoFuel from './NoFuel';
 import { Button } from './ui/button';
 import { getVehicleStats, IgetVehicleStats } from '@/app/database';
 import mongoose from "mongoose";
+import CarListLogPage from './shared/CarListLogPage';
 
 
 interface LogPageProps {

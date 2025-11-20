@@ -50,6 +50,7 @@ type FuelLogFormValues = z.infer<ReturnType<typeof getFuelLogFormSchema>>;
 const FuelLogEdit = ({ id, vehicleId, odometer, fuelAmount, price, fullTank, date, previousOdometer, previousDate }: IFuelLogUpdate) => {
   const [updating, setUpdating] = useState(false);
   const formSchema = getFuelLogFormSchema(previousOdometer, previousDate);
+    const localDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   const form = useForm<FuelLogFormValues>({
     resolver: zodResolver(formSchema) as never,
     defaultValues:{
@@ -57,7 +58,7 @@ const FuelLogEdit = ({ id, vehicleId, odometer, fuelAmount, price, fullTank, dat
       fuelAmount:fuelAmount,
       fullTank:fullTank,
       price:price,
-      date:new Date(date).toISOString().split("T")[0],
+      date:localDate,
     }
   })
 
