@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/chart"
 
 interface LineChartDotsProps {
-  data: any[]
+  data: unknown[]
   xKey: string
   yKey: string
   title?: string
