@@ -28,7 +28,8 @@ export interface FuelLogCardProps {
   totalPrice: number,
   pricePerLiter: number,
   volume: number,
-  odometer: number
+  odometer: number,
+  fullTank?:boolean,
 }
 
 const FuelLogCard = ({ id, date, totalPrice, pricePerLiter, volume, odometer }: FuelLogCardProps) => {

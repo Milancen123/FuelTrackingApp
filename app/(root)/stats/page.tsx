@@ -48,6 +48,7 @@ const page = async () => {
       pricePerLiter:fuelLog.fuelAmount / fuelLog.price,
       volume:fuelLog.fuelAmount,
       odometer:fuelLog.odometer,
+      fullTank:fuelLog.fullTank,
     }
   })
   
