@@ -65,7 +65,7 @@ const page = async () => {
   const {fuelPriceTrend, odometerProgression, monthlySpending} = generateFuelAnalyticsData(fuelLogs);
 
   // ai insights
-  const res = await fetch("http://localhost:3000/api/aiInsights", {
+  const res = await fetch(`${process.env.BASEURI}/api/aiInsights`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ fuelLogs }),
