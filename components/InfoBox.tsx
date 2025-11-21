@@ -23,7 +23,7 @@ const InfoBox = ({type}:InfoBoxProps) => {
             <DialogTrigger className='bg-white hover:cursor-pointer hover:bg-gray-200 p-2 rounded-xl'>
                 <Info color={"#0000ff"} size={16}/>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className='z-200'>
                 {type === "odometer" ?
                     <>
                         <DialogHeader>

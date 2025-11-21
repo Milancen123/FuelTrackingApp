@@ -372,7 +372,8 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                             {errors && (<p className='text-xs text-red-500 font-semibold text-center'>{errors.fuelFilled}</p>)}
                             <div className="flex items-center gap-3">
                                 <Label htmlFor="terms">Full Tank</Label>
-                                <Checkbox id="terms" onCheckedChange={(checked)=>handleChange("fullTank", (checked ? "true":"false"))}/>
+                                <Checkbox id="terms" className="border-2 border-black" onCheckedChange={(checked)=>handleChange("fullTank", (checked ? "true":"false"))}/>
+                                <p className='text-gray-400 text-xs'>(Check this box if you filled the full tank this time)</p>
                             </div>
                         </div>
                     </div>
