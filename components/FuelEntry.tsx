@@ -285,7 +285,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
 
 
     return (
-        <div className='fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center sm:items-center justify-center p-0 sm:p-4'>
+        <div className='fixed inset-0 bg-background/80 backdrop-blur-sm z-100 flex items-center sm:items-center justify-center p-0 sm:p-4'>
             <div className='md:w-[35%] md:min-w-[500px] w-[85%] bg-white shadow-xl rounded-xl p-4 flex flex-col gap-10'>
                 <div className='flex justify-between items-center border-b-1 pb-3'>
                     <div>

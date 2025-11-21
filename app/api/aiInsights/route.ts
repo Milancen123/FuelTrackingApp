@@ -27,46 +27,43 @@ const prompt = `
 You are an AI analyst for a fuel-tracking application.
 
 TASK:
-Analyze the provided vehicle fuel logs and return **only** a JSON object that lists the top 3–5 major anomalies, focusing exclusively on the **latest 3–5 entries**. Older logs should be used only for reference in calculations, such as computing average consumption and rolling price averages.
+Analyze the provided fuel logs and detect **duplicate entries**.
 
-INPUT:
-- The assistant will be given an array of log objects in place of user data at the end of this prompt. Each log object may contain:
-  - odometer (number, km)
-  - fuelAmount (number, liters)
-  - price (number, total cost)
-  - date (ISO timestamp, e.g. "2025-03-20T00:00:00.000+00:00")
-  - fullTank (boolean)
-  - pricePerLiter (number)
-  - other fields may appear (e.g., _id, vehicleId) — ignore/remove them.
+A duplicate entry is defined as:
+1. Two or more logs that share the **same date AND the same odometer value**, OR
+2. Two or more logs with the **same date** where the odometer order makes no sense (e.g., lower odometer after a higher one on the same day), OR
+3. Two logs on the same date that appear to be duplicated except for a minor variation in fuelAmount or price (within ±5%).
 
-PREPROCESSING RULES:
-1. Sort logs by date ascending (oldest → newest) for calculations.
-2. Drop any identifier fields such as _id or vehicleId — do not include them in the output or anomaly text.
-3. Compute consumption using only fullTank === true entries with a valid previous refuel.
-4. Compute consumption in liters/100 km as: consumption = (fuelAmount / delta_km) * 100. Round to one decimal place.
-5. Format all dates in anomalies as "Mon D, YYYY" (e.g., Oct 15, 2025).
+WHAT TO FLAG:
+- List each duplicate as a short anomaly description.
+- Include the formatted date ("Mon D, YYYY") and the odometer value.
+- Focus on the clearest 1–5 duplicate anomalies.
 
-ANOMALY DETECTION (latest 3–5 entries only):
-- Compare each latest log’s computed consumption against the **vehicle’s overall average consumption** (all prior full-tank refuels). Flag as an anomaly if consumption is **≥ 25% higher** than the vehicle’s average.
-- High price per liter: flag if pricePerLiter is **≥ 25% higher than the average** of the previous 5 full-tank refuels.
-- Unusual odometer jump: delta_km <= 0 or delta_km > 1000 km.
-- Duplicate/conflicting entries: same date & odometer but different fuelAmount or price.
-- Impossible values: negative numbers, zero fuelAmount on fullTank === true, or pricePerLiter inconsistent with price/fuelAmount > 5%.
+OUTPUT:
+Return **only** a JSON object in this exact shape:
 
-OUTPUT RULES:
-- JSON ONLY, exactly in this shape:
 {
   "anomalies": ["anomaly1", "anomaly2", "..."],
   "recommendations": ["recommendation1", "recommendation2", "..."]
 }
-- 1–5 anomaly strings, concise, each including:
-  - description, affected date(s) ("Mon D, YYYY"), relevant numeric values.
-- 3–8 actionable general fuel-saving recommendations: check tire pressure, change to winter tires, avoid rapid accelerations, smooth driving, monitor fuel prices.
 
-ADDITIONAL NOTES:
-- Focus exclusively on the **most recent logs**; ignore minor fluctuations.
-- Skip any metric if insufficient data.
-- Always use the requested date format and JSON shape. No extra commentary.
+ANOMALIES:
+- Write 1–5 short strings describing duplicate entries.
+- Use formatted dates and odometer values.
+
+RECOMMENDATIONS:
+Provide 3–6 simple suggestions such as:
+- review the logs for accidental double entries,
+- avoid entering two logs for the same date unless necessary,
+- ensure odometer values are recorded consistently,
+- validate entries before saving,
+- keep fuel receipts for verification.
+
+STRICT RULES:
+- No commentary outside the JSON.
+- Ignore fields such as _id or vehicleId.
+- Always use date format "Mon D, YYYY".
+- Do not compute fuel consumption or any other metrics.
 
 USER DATA:
 ${JSON.stringify(fuelLogs)}
