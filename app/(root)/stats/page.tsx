@@ -64,7 +64,20 @@ const page = async () => {
 
   const {fuelPriceTrend, odometerProgression, monthlySpending} = generateFuelAnalyticsData(fuelLogs);
 
+  // ai insights
+  const res = await fetch("http://localhost:3000/api/aiInsights", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fuelLogs }),
+  });
 
+  const data = await res.json();
+  console.log("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-");
+  const cleaned = data.raw.replace(/```json\s*|```/g, "").trim();
+  const extracted = JSON.parse(cleaned);
+  console.log(extracted);
+  //console.log(data.recommendations);
+  console.log("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-")
 
   console.log("ovo je mapirano", mapped);
   return (
@@ -72,7 +85,7 @@ const page = async () => {
       <div className='pt-5'>
           <p className='text-lg font-bold'>Statistics</p>
       </div>
-      <StatsPage allVehicles={vehicles} fuelLogs={fuelLogs} vehicleStats={{}} interactiveBarChart={mapped} fuelPriceTrend={fuelPriceTrend} odometerProgression={odometerProgression} monthlySpending={monthlySpending}/>
+      <StatsPage allVehicles={vehicles} fuelLogs={fuelLogs} vehicleStats={{}} interactiveBarChart={mapped} fuelPriceTrend={fuelPriceTrend} odometerProgression={odometerProgression} monthlySpending={monthlySpending} insights={extracted}/>
     </div>
   )
 }

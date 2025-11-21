@@ -8,7 +8,8 @@ import CarListLogPage from '../shared/CarListLogPage';
 import { BarChartInteractive } from './BarChartInteractive';
 import { LineChartDots } from './LineChartDots';
 import { ChartBarDefault } from './ChartBarDefault';
-
+import { TriangleAlert } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 
 export interface InteractiveBarChart {
   date: string;
@@ -32,6 +33,11 @@ export interface MonthlySpending {
   cost: number;
 }
 
+interface Insights{
+  anomalies:string[],
+  recommendations:string[],
+}
+
 export interface StatsPageProps {
   allVehicles: LogPageVehicle[];         // array of vehicles
   fuelLogs: FuelLogCardProps[];         // array of fuel logs
@@ -40,6 +46,7 @@ export interface StatsPageProps {
   fuelPriceTrend: FuelPriceTrend[];     // generated trend data
   odometerProgression: OdometerProgression[]; // generated odometer data
   monthlySpending: MonthlySpending[];   // monthly spending totals
+  insights:Insights;
 }
 
 export const fuelPriceTrend = [
@@ -92,8 +99,24 @@ export const monthlySpending = [
   //   monthlySpending,
   // // };
 
+const insights = {
+  "anomalies": [
+    "2025-09-25 → Odometer jumped 1795 km since previous refuel. This is unusually high compared to your typical 300–700 km intervals.",
+    "2025-09-14 → Three refuels with only ~10 km between them. This suggests either incomplete refuels or incorrect odometer readings.",
+    "2025-10-24 → FuelAmount = 3L. Extremely small refuel may break consumption calculations.",
+    "2025-08-05 → Two refuels on the same day, resulting in abnormal consumption pattern.",
+    "2025-09-05 → Consumption extremely low (23.25L for 10 km). Likely incorrect odometer or missing previous entry."
+  ],
+  "recommendations": [
+    "Avoid very small refuels (under 5L) unless necessary — they create inaccurate consumption data.",
+    "Review entries made on 2025-09-14 and 2025-09-05; consider merging or correcting odometer values.",
+    "Check if your odometer was logged incorrectly near 2025-09-25 — distance seems unrealistic.",
+    "If you refuel more than once per day, mark non-full tanks correctly to ensure accurate calculations.",
+    "When fuel spikes or drops sharply, verify if the log matches real consumption — this may indicate a misread odometer or a potential vehicle issue."
+  ]
+}
 
-const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, fuelPriceTrend, odometerProgression, monthlySpending}: StatsPageProps) => {
+const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, fuelPriceTrend, odometerProgression, monthlySpending, insights}: StatsPageProps) => {
     const defaultVehicle: string =  allVehicles[0].name;
     const [activeVehicle, setActiveVehicle] = useState<LogPageVehicle>(allVehicles.find((vehicle) => (vehicle.name === defaultVehicle)) || allVehicles[0]);
     const [vehicles, setVehicles] = useState<LogPageVehicle[]>(allVehicles);
@@ -133,7 +156,34 @@ const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, f
         />
       </div>
       
-
+      <div className='flex gap-4 md:flex-row flex-col'>
+        <div className='bg-red-200 p-4 rounded-xl shadow-xl flex flex-col w-full'>
+          <div className='flex items-center gap-2'>
+          <TriangleAlert color='#ff0000'/>
+          <h1 className='md:text-xl text-lg font-bold text-red-500'>AI detected anomalies</h1>
+          </div>
+          <ol>
+            {insights.anomalies.map((anomaly) => {
+              return <li key={anomaly} className='md:text-sm text-xs'>
+                <span className='md:text-xl text-xs font-bold'>- </span>{anomaly}
+              </li>
+            })}
+          </ol>
+        </div>
+        <div className='bg-blue-200 p-4 rounded-xl shadow-xl flex flex-col w-full'>
+          <div className='flex items-center gap-2'>
+          <Lightbulb color='#0000ff'/>
+          <h1 className='text-xl font-bold text-blue-500'>AI recommendations</h1>
+          </div>
+          <ul>
+            {insights.recommendations.map((recommendation) => {
+              return <li key={recommendation} className='md:text-sm text-xs'>
+                <span className='text-xl font-bold'>- </span>{recommendation}
+              </li>
+            })}
+          </ul>
+        </div>
+      </div>
         {/* 
           osnovni podaci
           avg consumption for that vehicle
