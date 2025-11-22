@@ -33,10 +33,16 @@ export interface MonthlySpending {
   cost: number;
 }
 
-interface Insights{
-  anomalies:string[],
-  recommendations:string[],
+interface Insights {
+  anomalies: string[],
+  recommendations: string[],
 }
+
+export interface FuelConsumptionPeaksI {
+  date: string,
+  avgCons: number,
+}
+
 
 export interface StatsPageProps {
   allVehicles: LogPageVehicle[];         // array of vehicles
@@ -46,7 +52,8 @@ export interface StatsPageProps {
   fuelPriceTrend: FuelPriceTrend[];     // generated trend data
   odometerProgression: OdometerProgression[]; // generated odometer data
   monthlySpending: MonthlySpending[];   // monthly spending totals
-  insights:Insights;
+  insights: Insights;
+  fuelConsumptionPeaks: FuelConsumptionPeaksI[] | [];
 }
 
 export const fuelPriceTrend = [
@@ -93,11 +100,11 @@ export const monthlySpending = [
   { month: "November", cost: 41 },
 ]
 
-  // // return {
-  //   fuelPriceTrend,
-  //   odometerProgression,
-  //   monthlySpending,
-  // // };
+// // return {
+//   fuelPriceTrend,
+//   odometerProgression,
+//   monthlySpending,
+// // };
 
 const insights = {
   "anomalies": [
@@ -116,19 +123,25 @@ const insights = {
   ]
 }
 
-const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, fuelPriceTrend, odometerProgression, monthlySpending, insights}: StatsPageProps) => {
-    const defaultVehicle: string =  allVehicles[0].name;
-    const [activeVehicle, setActiveVehicle] = useState<LogPageVehicle>(allVehicles.find((vehicle) => (vehicle.name === defaultVehicle)) || allVehicles[0]);
-    const [vehicles, setVehicles] = useState<LogPageVehicle[]>(allVehicles);
-    const [fuelData, setFuelData] = useState(fuelLogs);
-    const [filter, setFilter] = useState<string>("");
+const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, fuelPriceTrend, odometerProgression, monthlySpending, insights, fuelConsumptionPeaks }: StatsPageProps) => {
+  const defaultVehicle: string = allVehicles[0].name;
+  const [activeVehicle, setActiveVehicle] = useState<LogPageVehicle>(allVehicles.find((vehicle) => (vehicle.name === defaultVehicle)) || allVehicles[0]);
+  const [vehicles, setVehicles] = useState<LogPageVehicle[]>(allVehicles);
+  const [fuelData, setFuelData] = useState(fuelLogs);
+  const [filter, setFilter] = useState<string>("");
 
 
   return (
     <div className='flex flex-col gap-4'>
-        <CarListLogPage vehicles={vehicles} setActiveVehicle={setActiveVehicle} activeVehicle={activeVehicle} />
-        {/* <DateRangeSelector setFilter={setFilter}/> */}
-        <BarChartInteractive chartData = {interactiveBarChart}/>
+      {/* 
+      ______________________________
+      |Avg consumption||
+      |liter per km|Price per km|
+      ------------------------------
+      */}
+      <CarListLogPage vehicles={vehicles} setActiveVehicle={setActiveVehicle} activeVehicle={activeVehicle} />
+      {/* <DateRangeSelector setFilter={setFilter}/> */}
+      <BarChartInteractive chartData={interactiveBarChart} />
       <div className='flex md:flex-row flex-col w-full gap-3'>
         <LineChartDots
           data={fuelPriceTrend}
@@ -155,36 +168,57 @@ const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, f
           colorVar="--chart-2"
         />
       </div>
+
+
+      {/* 
+        That would be niec:
+        Develop component that will graphically display avg consumption and spikes if any
+          Develop function that will calculate the avg consumption between fill ups
+          And graphically represent that data
+        GIve overview why the spikes could occur (driving behaviour etc....)
+        
       
+      */}
       <div className='flex gap-4 md:flex-row flex-col'>
-        <div className='bg-red-200 p-4 rounded-xl shadow-xl flex flex-col w-full'>
+        {/* <div className='bg-red-200 p-4 rounded-xl shadow-xl flex flex-col w-full'>
           <div className='flex items-center gap-2'>
-          <TriangleAlert color='#ff0000'/>
-          <h1 className='md:text-xl text-lg font-bold text-red-500'>AI detected anomalies</h1>
+            <TriangleAlert color='#ff0000' />
+            <h1 className='md:text-xl text-lg font-bold text-red-500'>AI detected anomalies</h1>
           </div>
-          <ol>
-            {insights.anomalies.map((anomaly) => {
-              return <li key={anomaly} className='md:text-sm text-xs'>
-                <span className='md:text-xl text-xs font-bold'>- </span>{anomaly}
-              </li>
-            })}
-          </ol>
-        </div>
-        <div className='bg-blue-200 p-4 rounded-xl shadow-xl flex flex-col w-full'>
-          <div className='flex items-center gap-2'>
-          <Lightbulb color='#0000ff'/>
-          <h1 className='text-xl font-bold text-blue-500'>AI recommendations</h1>
+          
+          <div>
+            <h1>dsalkfjaskldfjslakdfj</h1>
           </div>
-          <ul>
-            {insights.recommendations.map((recommendation) => {
-              return <li key={recommendation} className='md:text-sm text-xs'>
-                <span className='text-xl font-bold'>- </span>{recommendation}
-              </li>
-            })}
-          </ul>
+        </div> */}
+
+        <LineChartDots
+          data={fuelConsumptionPeaks}
+          xKey="date"
+          yKey="avgCons"
+          title="Fuel Consumption Trend Over Time"
+          description="Graph showing average consumption over full tank cycles"
+          colorVar="--chart-4"
+          peakDetection={true}
+        />
+        <div className='flex flex-col w-[40%]'>
+          <div className='bg-blue-200 p-4 rounded-xl shadow-xl flex flex-col w-full'>
+            <div className='flex items-center gap-2'>
+              <Lightbulb color='#0000ff' />
+              <h1 className='text-xl font-bold text-blue-500'>AI recommendations</h1>
+            </div>
+            <ul>
+              {insights.recommendations.map((recommendation) => {
+                return <li key={recommendation} className='md:text-sm text-xs'>
+                  <span className='text-xl font-bold'>- </span>{recommendation}
+                </li>
+              })}
+            </ul>
+          </div>
+
         </div>
+
       </div>
-        {/* 
+      {/* 
           osnovni podaci
           avg consumption for that vehicle
           0.02l/km and 0.5eur/km

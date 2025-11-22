@@ -4,11 +4,12 @@ import { CarType } from '@/types/car';
 import getAppUser from '@/lib/auth/getAppUser';
 import { redirect } from 'next/navigation';
 import DateRangeSelector from '@/components/Stats/DateRangeSelector';
-import StatsPage from '@/components/Stats/StatsPage';
+import StatsPage, { FuelConsumptionPeaksI } from '@/components/Stats/StatsPage';
 import { getFuelLogsForVehicleID } from '@/app/database';
 import mongoose from "mongoose";
 import { FuelLogCardProps } from '@/components/FuelLogCard';
 import { generateFuelAnalyticsData } from '@/lib/utils';
+import { fuelConsumptionSpikeDetection } from '@/lib/calculations/fuelConsumptionSpikeDetection';
 
 
 const page = async () => {
@@ -45,12 +46,16 @@ const page = async () => {
       id:fuelLog._id.toString(),
       date:new Date(fuelLog.date),
       totalPrice:fuelLog.price,
-      pricePerLiter:fuelLog.fuelAmount / fuelLog.price,
+      pricePerLiter:Number(fuelLog.price) / Number(fuelLog.fuelAmount),
       volume:fuelLog.fuelAmount,
       odometer:fuelLog.odometer,
       fullTank:fuelLog.fullTank,
     }
   })
+
+  const fuelConsumptionPeaks:FuelConsumptionPeaksI[] = fuelConsumptionSpikeDetection(fuelLogs);
+
+
   
   const mapped = fuelLogs.map((item, index) => {
     const previous = fuelLogs[index - 1];
@@ -73,20 +78,15 @@ const page = async () => {
   });
 
   const data = await res.json();
-  console.log("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-");
   const cleaned = data.raw.replace(/```json\s*|```/g, "").trim();
   const extracted = JSON.parse(cleaned);
-  console.log(extracted);
-  //console.log(data.recommendations);
-  console.log("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-")
 
-  console.log("ovo je mapirano", mapped);
   return (
     <div className='flex flex-col mb-[30%] md:mb-[5%]'>
       <div className='pt-5'>
           <p className='text-lg font-bold'>Statistics</p>
       </div>
-      <StatsPage allVehicles={vehicles} fuelLogs={fuelLogs} vehicleStats={{}} interactiveBarChart={mapped} fuelPriceTrend={fuelPriceTrend} odometerProgression={odometerProgression} monthlySpending={monthlySpending} insights={extracted}/>
+      <StatsPage allVehicles={vehicles} fuelLogs={fuelLogs} vehicleStats={{}} interactiveBarChart={mapped} fuelPriceTrend={fuelPriceTrend} odometerProgression={odometerProgression} monthlySpending={monthlySpending} insights={extracted} fuelConsumptionPeaks={fuelConsumptionPeaks}/>
     </div>
   )
 }
