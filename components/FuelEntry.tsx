@@ -404,7 +404,7 @@ const FuelEntry = ({ isOpen, setIsOpen, activeVehicle, setActiveVehicle, vehicle
                                         {date ? format(date, "PPP") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-full p-0">
+                                <PopoverContent className="w-full p-0 z-300">
                                     <Calendar required mode="single" selected={date} onSelect={setDate} />
                                 </PopoverContent>
                             </Popover>
