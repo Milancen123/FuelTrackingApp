@@ -25,7 +25,7 @@ export interface IFuelLogUpdate{
 
 const page = async ({ params }: LogPageProps) => {
 
-    const { id } = params;
+    const { id } = await params;
     const data = await getFuelLogById(new mongoose.Types.ObjectId(id));
 
     if(!data){

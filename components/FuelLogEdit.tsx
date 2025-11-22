@@ -66,7 +66,7 @@ const FuelLogEdit = ({ id, vehicleId, odometer, fuelAmount, price, fullTank, dat
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try{
       setUpdating(true);
-      const response = await fetch(`http://localhost:3000/api/updateFuelLog/${id}`, {
+      const response = await fetch(`/api/updateFuelLog/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,8 +80,6 @@ const FuelLogEdit = ({ id, vehicleId, odometer, fuelAmount, price, fullTank, dat
           date: values.date,
         }),
       });
-
-      console.log(response);
 
     }catch(err){
       console.error(err);
