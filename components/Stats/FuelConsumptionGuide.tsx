@@ -90,8 +90,8 @@ const FuelConsumptionGuide = () => {
 
   return (
     <Dialog>
-      <DialogTrigger className="flex items-center gap-2 text-sm text-primary underline cursor-pointer">
-        <Info className="w-4 h-4" />
+      <DialogTrigger className="flex items-center gap-2 text-sm underline cursor-pointer text-blue-500">
+        <Info className="w-4 h-4" color="#0000ff" />
         How to interpret this graph
       </DialogTrigger>
 
