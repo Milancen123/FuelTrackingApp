@@ -200,7 +200,7 @@ const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, f
           colorVar="--chart-4"
           peakDetection={true}
         />
-        <div className='flex flex-col w-[40%]'>
+        <div className='flex flex-col md:w-[40%] w-full'>
           <div className='bg-blue-200 p-4 rounded-xl shadow-xl flex flex-col w-full'>
             <div className='flex items-center gap-2'>
               <Lightbulb color='#0000ff' />
