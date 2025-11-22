@@ -10,6 +10,7 @@ import { LineChartDots } from './LineChartDots';
 import { ChartBarDefault } from './ChartBarDefault';
 import { TriangleAlert } from 'lucide-react';
 import { Lightbulb } from 'lucide-react';
+import FuelConsumptionGuide from './FuelConsumptionGuide';
 
 export interface InteractiveBarChart {
   date: string;
@@ -135,7 +136,7 @@ const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, f
     <div className='flex flex-col gap-4'>
       {/* 
       ______________________________
-      |Avg consumption||
+      |Avg consumption|Avg money spent per month|
       |liter per km|Price per km|
       ------------------------------
       */}
@@ -190,7 +191,7 @@ const StatsPage = ({ allVehicles, fuelLogs, vehicleStats, interactiveBarChart, f
             <h1>dsalkfjaskldfjslakdfj</h1>
           </div>
         </div> */}
-
+        {/* <FuelConsumptionGuide/> */}
         <LineChartDots
           data={fuelConsumptionPeaks}
           xKey="date"

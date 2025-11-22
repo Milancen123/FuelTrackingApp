@@ -50,9 +50,6 @@ const VehicleListAndFuelList = ({vehiclesProp}:VehicleListAndFuelListProps) => {
     useEffect(() => {
         if (vehicles) {
             setActiveVehicle(vehicles[0]);
-        } else {
-            console.log("Zasto ulazimo ovde");
-            console.log(vehicles);
         }
 
     }, [vehicles]);

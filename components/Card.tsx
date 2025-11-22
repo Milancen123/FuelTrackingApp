@@ -6,7 +6,7 @@ interface CardProps {
     title: string,
     type: string,
     data: number,
-    stats: number
+    stats?: number
 }
 
 const Card = ({ title, type, data, stats }: CardProps) => {
@@ -21,13 +21,16 @@ const Card = ({ title, type, data, stats }: CardProps) => {
             <div className='text-2xl font-bold'>
                 <h1>{type==="consumption"? `${data.toFixed(2)}l/100km`:`€${data.toFixed(2)}`}</h1>
             </div>
-            <div className={`flex gap-1 ${(stats > 0 ? 'text-red-800' : 'text-green-600')}`}>
-                {
-                    stats > 0 ? <TrendingUp/> : <TrendingDown/>
-                }
-                <p>{stats > 0 && '+'}{type!=="consumption" && "€"}{stats.toFixed(2)} from last month</p>
+            {stats &&
+                <div className={`flex gap-1 ${(stats > 0 ? 'text-red-800' : 'text-green-600')}`}>
+                    {
+                        stats > 0 ? <TrendingUp /> : <TrendingDown />
+                    }
+                    <p>{stats > 0 && '+'}{type !== "consumption" && "€"}{stats.toFixed(2)}{type === "consumption" && "%"} from last month</p>
 
-            </div>
+                </div>
+            }
+
         </div>
     )
 }

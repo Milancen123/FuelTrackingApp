@@ -31,7 +31,7 @@ export const totalAverageConsumption = (fuelData: FuelEntryType[], firstOdometer
 
     if (fuelData.length <= 1) return 0;
 
-    const averageConsumptions = [];
+    // const averageConsumptions = [];
     //sum of all fuel filled except the first referent one * 100
     //total_distance = last_odometer - first_odometer
     //sumFuel/total_distance L/100km

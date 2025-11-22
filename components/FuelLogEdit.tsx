@@ -144,7 +144,7 @@ const FuelLogEdit = ({ id, vehicleId, odometer, fuelAmount, price, fullTank, dat
                   className="w-5 h-5" />
               </FormControl>
               <FormDescription>
-                Please check if you topped the tank: {field.value?<span className='text-green-400 font-semibold '>You topped the tank</span>:<span className='text-red-400 font-semibold'>It was a partial fill up</span>}
+                Please check if you topped up the tank: {field.value?<span className='text-green-400 font-semibold '>You topped up the tank</span>:<span className='text-red-400 font-semibold'>It was a partial fill up</span>}
               </FormDescription>
               <FormMessage />
             </FormItem>

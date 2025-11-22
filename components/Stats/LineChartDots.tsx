@@ -18,6 +18,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { useEffect, useState } from "react"
+import FuelConsumptionGuide from "./FuelConsumptionGuide"
 
 interface LineChartDotsProps {
   data: unknown[]
@@ -71,6 +72,7 @@ export function LineChartDots({
     <Card className="w-full ">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
+        {peakDetection && <FuelConsumptionGuide/>}
         <CardDescription>{description}</CardDescription>
       </CardHeader>
 
