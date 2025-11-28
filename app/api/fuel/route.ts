@@ -46,72 +46,71 @@ export async function POST(request: Request) {
 
 
         */
-        if(fullTank) {
-            //also get the info on the first odometer value for that vehicle
-            console.log("OVO JE STO SALJEM U FUNKCIJU");
-            console.log(vehicle);
-            const objectId = new mongoose.Types.ObjectId(vehicle);
-            const vehicleAllData = await getVehicleByID(objectId);
-            const firstOdometerValue = vehicleAllData[0].odometer;
+        //also get the info on the first odometer value for that vehicle
+        console.log("OVO JE STO SALJEM U FUNKCIJU");
+        console.log(vehicle);
+        const objectId = new mongoose.Types.ObjectId(vehicle);
+        const vehicleAllData = await getVehicleByID(objectId);
+        const firstOdometerValue = vehicleAllData[0].odometer;
 
-            const vehicleData = await getFuelLogsForVehicleID(vehicle, true);
-            if (!vehicleData) {
-                throw new Error("No vehicles data found");
-            }
-
-            const formattedData: FuelEntryType[] = vehicleData.map((fuelData: IFuelLog) => {
-                return {
-                    fuel_filled: fuelData.fuelAmount,
-                    date: new Date(fuelData.date),
-                    total_price: fuelData.price,
-                    odometer: fuelData.odometer,
-                    fullTank: fuelData.fullTank,
-                }
-            });
-
-            formattedData.push({
-                fuel_filled: Number(fuelFilled),
-                date: new Date(date),
-                total_price: Number(totalPrice),
-                odometer: Number(odometer),
-                fullTank:fullTank,
-            });
-
-            // export interface FuelEntryType {
-            //     fuel_filled: number;        // Liters filled
-            //     date: Date;                 // Date of refueling
-            //     total_price: number;        // Total price in chosen currency
-            //     odometer:number;
-            //     average_consumption?: number; // L/100km for this fill-up
-            //     fullTank:boolean;
-            //     }
-            //odradi kalkulaciju svih ostalih parametara
-            const average_consumption = totalAverageConsumption(formattedData ?? [], firstOdometerValue);
-            const compare_for_last_month_consumption = compareLifetimeConsumption(formattedData ?? [], firstOdometerValue);
-            const monthly_cost = totalSpentThisMonth(formattedData ?? []);
-            const compare_for_last_month_cost = compareMonthlyFuelCost(formattedData ?? []);
-
-            const updatedVehicle = await updateVehicleStats(vehicle, average_consumption, compare_for_last_month_consumption, monthly_cost, compare_for_last_month_cost);
-
-            const newFuelLog = await saveFuelLogToDB({
-                vehicleId: vehicle,
-                odometer,
-                fuelAmount: fuelFilled,
-                price: totalPrice,
-                date,
-                average_consumption: 0.0,
-                fullTank:fullTank,
-            });
-
-
-            return NextResponse.json({
-                success: true,
-                response: updatedVehicle,
-                averageConsumptionBetweenTwoFillUps: 0.0,
-            });
+        const vehicleData = await getFuelLogsForVehicleID(vehicle, true);
+        if (!vehicleData) {
+            throw new Error("No vehicles data found");
         }
-        
-        
+
+        const formattedData: FuelEntryType[] = vehicleData.map((fuelData: IFuelLog) => {
+            return {
+                fuel_filled: fuelData.fuelAmount,
+                date: new Date(fuelData.date),
+                total_price: fuelData.price,
+                odometer: fuelData.odometer,
+                fullTank: fuelData.fullTank,
+            }
+        });
+
+        formattedData.push({
+            fuel_filled: Number(fuelFilled),
+            date: new Date(date),
+            total_price: Number(totalPrice),
+            odometer: Number(odometer),
+            fullTank: fullTank,
+        });
+
+        // export interface FuelEntryType {
+        //     fuel_filled: number;        // Liters filled
+        //     date: Date;                 // Date of refueling
+        //     total_price: number;        // Total price in chosen currency
+        //     odometer:number;
+        //     average_consumption?: number; // L/100km for this fill-up
+        //     fullTank:boolean;
+        //     }
+        //odradi kalkulaciju svih ostalih parametara
+        const average_consumption = totalAverageConsumption(formattedData ?? [], firstOdometerValue);
+        const compare_for_last_month_consumption = compareLifetimeConsumption(formattedData ?? [], firstOdometerValue);
+        const monthly_cost = totalSpentThisMonth(formattedData ?? []);
+        const compare_for_last_month_cost = compareMonthlyFuelCost(formattedData ?? []);
+
+        const updatedVehicle = await updateVehicleStats(vehicle, average_consumption, compare_for_last_month_consumption, monthly_cost, compare_for_last_month_cost);
+
+        // const newFuelLog = await saveFuelLogToDB({
+        //     vehicleId: vehicle,
+        //     odometer,
+        //     fuelAmount: fuelFilled,
+        //     price: totalPrice,
+        //     date,
+        //     average_consumption: 0.0,
+        //     fullTank:fullTank,
+        // });
+
+
+        // return NextResponse.json({
+        //     success: true,
+        //     response: updatedVehicle,
+        //     averageConsumptionBetweenTwoFillUps: 0.0,
+        // });
+
+
+
 
         
 
@@ -142,11 +141,11 @@ export async function POST(request: Request) {
 
         console.log("SADA VRACAMO VEHICLE: ");
         // return vehicle with id to display the data about avg_consumption
-        const vehicleByIdReturned = await getVehicleByID(vehicle);
+        const vehicleByIdReturned = await getVehicleByID(new mongoose.Types.ObjectId(vehicle));
         console.log(vehicleByIdReturned);
         return NextResponse.json({
             success:true,
-            response:vehicleByIdReturned,
+            response:vehicleByIdReturned[0],
         });
     } catch (err) {
         console.error(err);

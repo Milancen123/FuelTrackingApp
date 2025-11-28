@@ -44,9 +44,10 @@ const Page = async () => {
         compare_for_last_month_cost,
         fuelData: vehicle.fuelData.reverse(),
       }
-    }else{
-      return [];
     }
+    // else{
+    //   return [];
+    // }
     
   });
 
