@@ -22,11 +22,11 @@ const Card = ({ title, type, data, stats }: CardProps) => {
                 <h1>{type==="consumption"? `${data.toFixed(2)}l/100km`:`€${data.toFixed(2)}`}</h1>
             </div>
             {stats &&
-                <div className={`flex gap-1 ${(stats > 0 ? 'text-red-800' : 'text-green-600')}`}>
+                <div className={`flex gap-1 ${(type !== "consumption" ? ((stats > 0) ? 'text-red-800' : 'text-green-600') : ((stats > 0) ? 'text-green-600' : 'text-red-800'))}`}>
                     {
-                        stats > 0 ? <TrendingUp /> : <TrendingDown />
+                        (type!=="consumption" ? (stats > 0) ? <TrendingDown /> : <TrendingUp /> : (stats > 0) ? <TrendingUp /> : <TrendingDown />)
                     }
-                    <p>{stats > 0 && '+'}{type !== "consumption" && "€"}{stats.toFixed(2)}{type === "consumption" && "%"} from last month</p>
+                    <p>{stats > 0 && '-'}{type !== "consumption" && "€"}{stats.toFixed(2)}{type === "consumption" && "%"} from last month</p>
 
                 </div>
             }
